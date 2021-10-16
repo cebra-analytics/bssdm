@@ -1,4 +1,6 @@
-#' An S4 class to represent a Climatch SDM model.
+#' S4 class to represent a Climatch SDM.
+#'
+#' Description of Climatch class ...
 #'
 #' @slot method SDM method: "climatch".
 #' @slot algorithm Algorithm: "euclidean" or "closest_standard_score".
@@ -7,11 +9,11 @@
 #' @slot presence The selected (nearest within range) climate data for each occurence point.
 #' @slot coordinates The coordinates for the selected climate data points.
 #' @slot as_score Indication of whether to generate a score 0-10 or values 0-1.
-Climatch <- setClass("Climatch",
-                     slots = c(method = "character",
-                               algorithm = "character",
-                               variables = "character",
-                               sd = "numeric",
-                               presence = "data.frame",
-                               coordinates = "data.frame",
-                               as_score = "logical"))
+setClass("Climatch",
+         slots = c(method = "character",
+                   algorithm = "character",
+                   variables = "character",
+                   sd = "numeric",
+                   presence = "data.frame",
+                   coordinates = "data.frame",
+                   as_score = "logical"))

@@ -9,7 +9,7 @@
 #' @param sd_data Optional \code{data.frame} for calculating the standard deviation for climate variable, or a \code{vector} of pre-calculated values.
 #' @param as_score Logical to indicate whether to generate a score 0-10 (default = TRUE) or values 0-1 (FALSE).
 #' @param ... Additional parameters.
-#' @return Model S4 object of class "Climatch" containing slots:
+#' @return A "Climatch" model S4 object containing slots:
 #'   \describe{
 #'     \item{\code{method}}{SDM method: "climatch".}
 #'     \item{\code{algorithm}}{Algorithm: "euclidean" or "closest_standard_score").}
@@ -42,10 +42,12 @@ climatch.Raster <- function(x, p,
     x <- raster::projectRaster(x, crs = "EPSG:4326")
   }
 
-  # Call data frame version with lon, lat, and variables
-  x <- raster::as.data.frame(x, xy=TRUE, na.rm=TRUE)
+  # Convert x to a data frame with lon, lat, and variables
+  x <- raster::as.data.frame(x, xy = TRUE, na.rm = TRUE)
   names(x)[1:2] <- c("lon", "lat")
-  climatch(x, p, ...)
+
+  # Call the data frame version of the function
+  climatch(x, p, algorithm, d_max, sd_data, as_score, ...)
 }
 
 #' @name climatch
@@ -126,12 +128,13 @@ climatch.data.frame <- function(x, p,
     }
   }
 
-  # Return a Climatch model S4 object with configured, calculated and selected data
-  return(Climatch(method = "climatch",
-                  algorithm = algorithm,
-                  variables = variables,
-                  sd = sd_data,
-                  presence = x[selected_idx, variables],
-                  coordinates = x[selected_idx, c("lon", "lat")],
-                  as_score = as_score))
+  # Return a "Climatch" object with configured, calculated and selected data
+  return(new("Climatch",
+             method = "climatch",
+             algorithm = algorithm,
+             variables = variables,
+             sd = sd_data,
+             presence = x[selected_idx, variables],
+             coordinates = x[selected_idx, c("lon", "lat")],
+             as_score = as_score))
 }

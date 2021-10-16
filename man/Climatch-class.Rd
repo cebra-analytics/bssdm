@@ -3,10 +3,9 @@
 \docType{class}
 \name{Climatch-class}
 \alias{Climatch-class}
-\alias{Climatch}
-\title{An S4 class to represent a Climatch SDM model.}
+\title{S4 class to represent a Climatch SDM.}
 \description{
-An S4 class to represent a Climatch SDM model.
+Description of Climatch class ...
 }
 \section{Slots}{
 

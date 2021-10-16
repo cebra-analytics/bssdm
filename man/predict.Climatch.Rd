@@ -15,7 +15,7 @@
 )
 }
 \arguments{
-\item{object}{Model S4 object of class "Climatch" containing slots:
+\item{object}{A "Climatch" model S4 object containing slots:
 \describe{
 \item{\code{method}}{SDM method: "climatch".}
 \item{\code{algorithm}}{Algorithm: "euclidean" or "closest_standard_score".}
