@@ -1,0 +1,138 @@
+#' Climatch SDM model building method
+#'
+#' @description
+#' Description of Climatch SDM method...
+#' @param x Climate (or environmental) data as a \code{Raster\*} (with any CRS), or a \code{data.frame} with WGS84 'lon' and 'lat' columns.
+#' @param p Species occurrence data as a \code{data.frame} (or \code{matrix}) with WGS84 'lon' and 'lat' columns.
+#' @param ... Additional parameters.
+#' @return A 'Climatch' model S4 object containing slots:
+#'   \describe{
+#'     \item{\code{method}}{SDM method: 'climatch'.}
+#'     \item{\code{algorithm}}{Algorithm: 'euclidean' or 'closest_standard_score').}
+#'     \item{\code{variables}}{List of climate (or environmental) variable names.}
+#'     \item{\code{sd}}{The standard deviation of each variable calculated via the climate data (\emph{x}) or the \emph{sd_data) when provided.}
+#'     \item{\code{presence}}{The selected (nearest within range) climate data for each occurence point.}
+#'     \item{\code{coordinates}}{The coordinates for the selected climate data points.}
+#'     \item{\code{as_score}}{Indication of whether to generate a score 0-10 or values 0-1.}
+#'   }
+#' @export
+climatch <- function(x, ...) {
+  UseMethod("climatch")
+}
+
+#' @name climatch
+#'
+#' @param algorithm Climatch method algorithm selected from 'euclidean' (default) or 'closest_standard_score'.
+#' @param d_max Maximum range distance (in km) used when matching occurrence points to nearest climate data points/cells.
+#' @param sd_data Optional \code{data.frame} for calculating the standard deviation for climate variable, or a \code{vector} of pre-calculated values.
+#' @param as_score Logical to indicate whether to generate a score 0-10 (default = TRUE) or values 0-1 (FALSE).
+#' @export
+climatch.data.frame <- function(x, p,
+                                algorithm = "euclidean",
+                                d_max = 50,
+                                sd_data = NULL,
+                                as_score = TRUE, ...) {
+
+  # Check that x and p have sufficient columns
+  if (ncol(x) < 3) {
+    stop("Climatch x data should have at least 3 columns.", call. = FALSE)
+  }
+  p <- as.data.frame(p)
+  if (ncol(p) < 2) {
+    stop("Climatch p data should have at least 2 columns.", call. = FALSE)
+  }
+
+  # Make sure x and p coordinate columns are 'lon' and 'lat'
+  if (!all(c("lon", "lat") %in% names(x))) {
+    stop("Climatch x coordinates should be 'lon' and 'lat'.", call. = FALSE)
+  }
+  if (!all(c("lon", "lat") %in% names(p))) {
+    stop("Climatch p coordinates should be 'lon' and 'lat'.", call. = FALSE)
+  }
+
+  # Check algorithm
+  if (!algorithm %in% c("euclidean", "closest_standard_score")) {
+    stop(paste("Climatch algorithm should be 'euclidean' or",
+               "'closest_standard_score'."),
+         call. = FALSE)
+  }
+
+  # Calculate standard deviations when required
+  variables <- names(x)[3:ncol(x)]
+  if (!is.null(sd_data)) {
+    if (is.data.frame(sd_data)) {
+      if (!all(variables %in% names(sd_data))) {
+        stop("Climatch sd data should have the same variables as x.",
+             call. = FALSE)
+      }
+      sd_data <- unlist(lapply(sd_data[, variables], sd))
+    } else if (is.numeric(sd_data) &&
+               length(sd_data) != length(variables)) {
+      stop("Climatch predict sd data should match x variables.",
+           call. = FALSE)
+    }
+  } else {
+    sd_data <- unlist(lapply(x[, variables], sd))
+  }
+
+  # Get data points (x) within a fixed range (d_max) of the occurrence
+  # points (p). Select up to one data point per occurrence point.
+  source_data <- cbind(id = 1:nrow(x), x[, c("lon", "lat")])
+  selected_idx <- c()
+  for (i in 1:nrow(p)) {
+
+    # Use cheap distance calculation to find close points
+    suppressMessages(
+      distances <- geodist::geodist(p[i, c("lon", "lat")],
+                                    source_data[, c("lon", "lat")],
+                                    measure = "cheap")/1000) # km
+    close_idx <- which(distances <= d_max*1.5) # allow for inaccuracy
+
+    # Recalculate close points with accurate method
+    if (length(close_idx)) {
+      distances[close_idx] <-
+        geosphere::distGeo(p[i, c("lon", "lat")],
+                           source_data[close_idx, c("lon", "lat")])/1000 # km
+    }
+
+    # Add closest point when in range
+    closest <- which.min(distances)
+    if (distances[closest] <= d_max) {
+      selected_idx <- c(selected_idx, source_data$id[closest])
+      source_data <- source_data[-closest,]
+    }
+  }
+
+  # Return a model (S4) object with selected data (x rows)
+  ModelObject <- setClass("Climatch",
+                          slots = c(method = "character",
+                                    algorithm = "character",
+                                    variables = "character",
+                                    sd = "numeric",
+                                    presence = "data.frame",
+                                    coordinates = "data.frame",
+                                    as_score = "logical"))
+  return(ModelObject(method = "climatch",
+                     algorithm = algorithm,
+                     variables = variables,
+                     sd = sd_data,
+                     presence = x[selected_idx, variables],
+                     coordinates = x[selected_idx, c("lon", "lat")],
+                     as_score = as_score))
+}
+
+#' @name climatch
+#'
+#' @export
+climatch.Raster <- function(x, p, ...) {
+
+  # Project to lon/lat if necessary (needed for distance calculations)
+  if (!raster::isLonLat(x)) {
+    x <- raster::projectRaster(x, crs = "EPSG:4326")
+  }
+
+  # Call data frame version with lon, lat, and variables
+  x <- raster::as.data.frame(x, xy=TRUE, na.rm=TRUE)
+  names(x)[1:2] <- c("lon", "lat")
+  climatch(x, p, ...)
+}
