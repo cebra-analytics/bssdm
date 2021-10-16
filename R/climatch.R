@@ -1,36 +1,58 @@
 #' Climatch SDM model building method
 #'
-#' @description
 #' Description of Climatch SDM method...
 #'
-#' @param x Climate (or environmental) data as a \code{Raster\*} (with any CRS), or a \code{data.frame} with WGS84 'lon' and 'lat' columns.
-#' @param p Species occurrence data as a \code{data.frame} (or \code{matrix}) with WGS84 'lon' and 'lat' columns.
+#' @param x Climate (or environmental) data as a \code{Raster*} (with any CRS), or a \code{data.frame} with WGS84 \emph{lon} and \emph{lat} columns.
+#' @param p Species occurrence data as a \code{data.frame} (or \code{matrix}) with WGS84 \emph{lon} and \emph{lat} columns.
+#' @param algorithm Climatch method algorithm selected from "euclidean" (default) or "closest_standard_score".
+#' @param d_max Maximum range distance (default = 50 km) used when matching occurrence points to nearest climate data points/cells.
+#' @param sd_data Optional \code{data.frame} for calculating the standard deviation for climate variable, or a \code{vector} of pre-calculated values.
+#' @param as_score Logical to indicate whether to generate a score 0-10 (default = TRUE) or values 0-1 (FALSE).
 #' @param ... Additional parameters.
-#' @return A 'Climatch' model S4 object containing slots:
+#' @return Model S4 object of class "Climatch" containing slots:
 #'   \describe{
-#'     \item{\code{method}}{SDM method: 'climatch'.}
-#'     \item{\code{algorithm}}{Algorithm: 'euclidean' or 'closest_standard_score').}
+#'     \item{\code{method}}{SDM method: "climatch".}
+#'     \item{\code{algorithm}}{Algorithm: "euclidean" or "closest_standard_score").}
 #'     \item{\code{variables}}{List of climate (or environmental) variable names.}
-#'     \item{\code{sd}}{The standard deviation of each variable calculated via the climate data (\emph{x}) or the \emph{sd_data) when provided.}
+#'     \item{\code{sd}}{The standard deviation of each variable calculated via the climate data (\emph{x}) or the \emph{sd_data} when provided.}
 #'     \item{\code{presence}}{The selected (nearest within range) climate data for each occurence point.}
 #'     \item{\code{coordinates}}{The coordinates for the selected climate data points.}
 #'     \item{\code{as_score}}{Indication of whether to generate a score 0-10 or values 0-1.}
 #'   }
+#' @include ClimatchClass.R
 #' @export
-climatch <- function(x, ...) {
+climatch <- function(x, p,
+                     algorithm = "euclidean",
+                     d_max = 50, # km
+                     sd_data = NULL,
+                     as_score = TRUE, ...) {
   UseMethod("climatch")
 }
 
 #' @name climatch
-#'
-#' @param algorithm Climatch method algorithm selected from 'euclidean' (default) or 'closest_standard_score'.
-#' @param d_max Maximum range distance (in km) used when matching occurrence points to nearest climate data points/cells.
-#' @param sd_data Optional \code{data.frame} for calculating the standard deviation for climate variable, or a \code{vector} of pre-calculated values.
-#' @param as_score Logical to indicate whether to generate a score 0-10 (default = TRUE) or values 0-1 (FALSE).
+#' @export
+climatch.Raster <- function(x, p,
+                            algorithm = "euclidean",
+                            d_max = 50, # km
+                            sd_data = NULL,
+                            as_score = TRUE, ...) {
+
+  # Project to lon/lat if necessary (needed for distance calculations)
+  if (!raster::isLonLat(x)) {
+    x <- raster::projectRaster(x, crs = "EPSG:4326")
+  }
+
+  # Call data frame version with lon, lat, and variables
+  x <- raster::as.data.frame(x, xy=TRUE, na.rm=TRUE)
+  names(x)[1:2] <- c("lon", "lat")
+  climatch(x, p, ...)
+}
+
+#' @name climatch
 #' @export
 climatch.data.frame <- function(x, p,
                                 algorithm = "euclidean",
-                                d_max = 50,
+                                d_max = 50, # km
                                 sd_data = NULL,
                                 as_score = TRUE, ...) {
 
@@ -104,36 +126,12 @@ climatch.data.frame <- function(x, p,
     }
   }
 
-  # Return a model (S4) object with configured, calculated and selected data
-  ModelObject <- setClass("Climatch",
-                          slots = c(method = "character",
-                                    algorithm = "character",
-                                    variables = "character",
-                                    sd = "numeric",
-                                    presence = "data.frame",
-                                    coordinates = "data.frame",
-                                    as_score = "logical"))
-  return(ModelObject(method = "climatch",
-                     algorithm = algorithm,
-                     variables = variables,
-                     sd = sd_data,
-                     presence = x[selected_idx, variables],
-                     coordinates = x[selected_idx, c("lon", "lat")],
-                     as_score = as_score))
-}
-
-#' @name climatch
-#'
-#' @export
-climatch.Raster <- function(x, p, ...) {
-
-  # Project to lon/lat if necessary (needed for distance calculations)
-  if (!raster::isLonLat(x)) {
-    x <- raster::projectRaster(x, crs = "EPSG:4326")
-  }
-
-  # Call data frame version with lon, lat, and variables
-  x <- raster::as.data.frame(x, xy=TRUE, na.rm=TRUE)
-  names(x)[1:2] <- c("lon", "lat")
-  climatch(x, p, ...)
+  # Return a Climatch model S4 object with configured, calculated and selected data
+  return(Climatch(method = "climatch",
+                  algorithm = algorithm,
+                  variables = variables,
+                  sd = sd_data,
+                  presence = x[selected_idx, variables],
+                  coordinates = x[selected_idx, c("lon", "lat")],
+                  as_score = as_score))
 }

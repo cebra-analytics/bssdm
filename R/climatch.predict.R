@@ -1,25 +1,24 @@
 #' Climatch SDM predict method
 #'
-#' @description
 #' Description of Climatch SDM predict method...
 #'
-#' @param object A 'Climatch' model S4 object containing slots:
+#' @param object Model S4 object of class "Climatch" containing slots:
 #'   \describe{
-#'     \item{\code{method}}{SDM method: 'climatch'.}
-#'     \item{\code{algorithm}}{Algorithm: 'euclidean' or 'closest_standard_score').}
+#'     \item{\code{method}}{SDM method: "climatch".}
+#'     \item{\code{algorithm}}{Algorithm: "euclidean" or "closest_standard_score".}
 #'     \item{\code{variables}}{List of climate (or environmental) variable names.}
-#'     \item{\code{sd}}{The standard deviation of each variable calculated via the climate data (\emph{x}) or the \emph{sd_data) when provided.}
+#'     \item{\code{sd}}{The standard deviation of each variable calculated via the climate data (\emph{x}) or the \emph{sd_data} when provided.}
 #'     \item{\code{presence}}{The selected (nearest within range) climate data for each occurence point.}
 #'     \item{\code{coordinates}}{The coordinates for the selected climate data points.}
 #'     \item{\code{as_score}}{Indication of whether to generate a score 0-10 (TRUE) or values 0-1 (FALSE).}
 #'   }
-#' @param x Climate (or environmental) data with corresponding model variables as a \code{Raster\*}, \code{data.frame}, or \code{matrix}.
-#' @param algorithm Optional (overriding) Climatch method algorithm selected from 'euclidean' or 'closest_standard_score'.
+#' @param x Climate (or environmental) data with corresponding model variables as a \code{Raster*}, \code{data.frame}, or \code{matrix}.
+#' @param algorithm Optional (overriding) Climatch method algorithm selected from "euclidean" or "closest_standard_score".
 #' @param sd_data Optional (overriding) \code{data.frame} for calculating the standard deviation for climate variable, or a \code{vector} of pre-calculated values.
 #' @param as_score Optional (overriding) logical to indicate whether to generate a score 0-10 (TRUE) or values 0-1 (FALSE).
 #' @param raw_output Logical to indicate whether to return raw predicted values (default = TRUE) or as an object (as per \emph{x}: FALSE).
 #' @param ... Additional parameters.
-#' @return Predicted values as a raw vector or within a \code{Raster\*}, \code{data.frame}, or \code{matrix} (as per \emph{x}).
+#' @return Predicted values as a raw vector or a \code{Raster*}, \code{data.frame}, or \code{matrix} (as per \emph{x}).
 #' @export
 predict.Climatch <- function(object, x,
                              algorithm = NULL,

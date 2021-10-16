@@ -22,3 +22,7 @@ Suggests:
     knitr,
     rmarkdown,
     testthat
+Collate: 
+    'ClimatchClass.R'
+    'climatch.R'
+    'climatch.predict.R'
