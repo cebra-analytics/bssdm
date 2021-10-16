@@ -19,7 +19,7 @@
 #'     \item{\code{coordinates}}{The coordinates for the selected climate data points.}
 #'     \item{\code{as_score}}{Indication of whether to generate a score 0-10 or values 0-1.}
 #'   }
-#' @include ClimatchClass.R
+#' @include Climatch-class.R
 #' @export
 climatch <- function(x, p,
                      algorithm = "euclidean",

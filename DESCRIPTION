@@ -23,6 +23,6 @@ Suggests:
     rmarkdown,
     testthat
 Collate: 
-    'ClimatchClass.R'
+    'Climatch-class.R'
     'climatch.R'
     'climatch.predict.R'
