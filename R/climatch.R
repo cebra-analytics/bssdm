@@ -2,6 +2,7 @@
 #'
 #' @description
 #' Description of Climatch SDM method...
+#'
 #' @param x Climate (or environmental) data as a \code{Raster\*} (with any CRS), or a \code{data.frame} with WGS84 'lon' and 'lat' columns.
 #' @param p Species occurrence data as a \code{data.frame} (or \code{matrix}) with WGS84 'lon' and 'lat' columns.
 #' @param ... Additional parameters.
@@ -103,7 +104,7 @@ climatch.data.frame <- function(x, p,
     }
   }
 
-  # Return a model (S4) object with selected data (x rows)
+  # Return a model (S4) object with configured, calculated and selected data
   ModelObject <- setClass("Climatch",
                           slots = c(method = "character",
                                     algorithm = "character",

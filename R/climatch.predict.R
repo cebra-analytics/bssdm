@@ -2,6 +2,7 @@
 #'
 #' @description
 #' Description of Climatch SDM predict method...
+#'
 #' @param object A 'Climatch' model S4 object containing slots:
 #'   \describe{
 #'     \item{\code{method}}{SDM method: 'climatch'.}
