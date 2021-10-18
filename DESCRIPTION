@@ -15,8 +15,9 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports:
     geodist (>= 0.0.7),
+    geometry (>= 0.4.5),
     geosphere (>= 1.5.10),
-    raster (>= 3.4.13),
+    raster (>= 3.4.13)
 Suggests:
     dismo,
     knitr,
@@ -24,5 +25,8 @@ Suggests:
     testthat
 Collate: 
     'Climatch-class.R'
+    'Rangebag-class.R'
     'climatch.R'
     'climatch.predict.R'
+    'rangebag.R'
+    'rangebag.predict.R'
