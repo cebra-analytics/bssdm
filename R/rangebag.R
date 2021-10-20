@@ -83,12 +83,12 @@ rangebag.Raster <- function(x, p,
   }
 
   # Return a "Rangebag" object with selected data and convex hull models
-  return(new("Rangebag",
-             method = "rangebag",
-             variables = names(x),
-             presence = fit_data,
-             coordinates = fit_coords,
-             ch_models = ch_models))
+  return(methods::new("Rangebag",
+                      method = "rangebag",
+                      variables = names(x),
+                      presence = fit_data,
+                      coordinates = fit_coords,
+                      ch_models = ch_models))
 }
 
 #' @name rangebag

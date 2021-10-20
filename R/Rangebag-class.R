@@ -7,9 +7,9 @@
 #' @slot presence The selected climate data corresponding to occurrences points.
 #' @slot coordinates The coordinates for the selected climate data.
 #' @slot ch_models A list of convex hull models (vertices).
-setClass("Rangebag",
-         slots = c(method = "character",
-                   variables = "character",
-                   presence = "data.frame",
-                   coordinates = "data.frame",
-                   ch_models = "list"))
+methods::setClass("Rangebag",
+                  slots = c(method = "character",
+                            variables = "character",
+                            presence = "data.frame",
+                            coordinates = "data.frame",
+                            ch_models = "list"))
