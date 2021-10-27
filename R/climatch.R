@@ -2,22 +2,36 @@
 #'
 #' Description of Climatch SDM method...
 #'
-#' @param x Climate (or environmental) data as a \code{Raster*} (with any CRS), or a \code{data.frame} with WGS84 \emph{lon} and \emph{lat} columns.
-#' @param p Species occurrence data as a \code{data.frame} (or \code{matrix}) with WGS84 \emph{lon} and \emph{lat} columns.
-#' @param algorithm Climatch method algorithm selected from "euclidean" (default) or "closest_standard_score".
-#' @param d_max Maximum range distance (default = 50 km) used when matching occurrence points to nearest climate data points/cells.
-#' @param sd_data Optional \code{data.frame} for calculating the standard deviation for climate variable, or a \code{vector} of pre-calculated values.
-#' @param as_score Logical to indicate whether to generate a score 0-10 (default = TRUE) or values 0-1 (FALSE).
+#' @param x Climate (or environmental) data as a \code{raster::Raster*} or
+#'   \code{terra::SpatRaster} (with any CRS), or a \code{data.frame} with
+#'   WGS84 \emph{lon} and \emph{lat} columns.
+#' @param p Species occurrence data as a \code{data.frame} (or \code{matrix})
+#'   with WGS84 \emph{lon} and \emph{lat} columns.
+#' @param algorithm Climatch method algorithm selected from "euclidean"
+#'   (default) or "closest_standard_score".
+#' @param d_max Maximum range distance (default = 50 km) used when matching
+#'   occurrence points to nearest climate data points/cells.
+#' @param sd_data Optional \code{data.frame} for calculating the standard
+#'   deviation for climate variable, or a \code{vector} of pre-calculated
+#'   values.
+#' @param as_score Logical to indicate whether to generate a score 0-10
+#'   (default = TRUE) or values 0-1 (FALSE).
 #' @param ... Additional parameters.
 #' @return A "Climatch" model S4 object containing slots:
 #'   \describe{
 #'     \item{\code{method}}{SDM method: "climatch".}
-#'     \item{\code{algorithm}}{Algorithm: "euclidean" or "closest_standard_score").}
-#'     \item{\code{variables}}{List of climate (or environmental) variable names.}
-#'     \item{\code{sd}}{The standard deviation of each variable calculated via the climate data (\emph{x}) or the \emph{sd_data} when provided.}
-#'     \item{\code{presence}}{The selected (nearest within range) climate data for each occurrence point.}
-#'     \item{\code{coordinates}}{The coordinates for the selected climate data.}
-#'     \item{\code{as_score}}{Indication of whether to generate a score 0-10 or values 0-1.}
+#'     \item{\code{algorithm}}{Algorithm: "euclidean" or
+#'       "closest_standard_score").}
+#'     \item{\code{variables}}{List of climate (or environmental) variable
+#'       names.}
+#'     \item{\code{sd}}{The standard deviation of each variable calculated via
+#'       the climate data (\emph{x}) or the \emph{sd_data} when provided.}
+#'     \item{\code{presence}}{The selected (nearest within range) climate data
+#'       for each occurrence point.}
+#'     \item{\code{coordinates}}{The coordinates for the selected climate
+#'       data.}
+#'     \item{\code{as_score}}{Indication of whether to generate a score 0-10
+#'       or values 0-1.}
 #'   }
 #' @include Climatch-class.R
 #' @export
@@ -44,6 +58,31 @@ climatch.Raster <- function(x, p,
 
   # Convert x to a data frame with lon, lat, and variables
   x <- raster::as.data.frame(x, xy = TRUE, na.rm = TRUE)
+  names(x)[1:2] <- c("lon", "lat")
+
+  # Call the data frame version of the function
+  climatch(x, p,
+           algorithm = algorithm,
+           d_max = d_max,
+           sd_data = sd_data,
+           as_score = as_score, ...)
+}
+
+#' @name climatch
+#' @export
+climatch.SpatRaster <- function(x, p,
+                                algorithm = "euclidean",
+                                d_max = 50, # km
+                                sd_data = NULL,
+                                as_score = TRUE, ...) {
+
+  # Project to lon/lat if necessary (needed for distance calculations)
+  if (!terra::islonlat(x)) {
+    x <- terra::project(x, crs = "EPSG:4326")
+  }
+
+  # Convert x to a data frame with lon, lat, and variables
+  x <- terra::as.data.frame(x, xy = TRUE, na.rm = TRUE)
   names(x)[1:2] <- c("lon", "lat")
 
   # Call the data frame version of the function

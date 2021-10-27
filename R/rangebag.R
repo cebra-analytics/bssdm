@@ -2,19 +2,29 @@
 #'
 #' Description of Rangebag SDM method...
 #'
-#' @param x Climate (or environmental) data as a \code{Raster*} (with any CRS), or a \code{data.frame} with WGS84 \emph{lon} and \emph{lat} columns.
-#' @param p Species occurrence data as a \code{data.frame} (or \code{matrix}) with WGS84 \emph{lon} and \emph{lat} columns.
-#' @param n_models Number of convex hull models to build in sampled environment space (default = 100).
-#' @param n_dim Number of dimensions (variables) of sampled convex hull models (default = 2).
-#' @param sample_prop Proportion of environment data rows sampled for fitting each convex hull model (default = 0.5).
-#' @param limit_occur Logical to indicate whether to limit occurrence data to one per environment data cell (default = TRUE).
+#' @param x Climate (or environmental) data as a \code{raster::Raster*} or
+#'   \code{terra::SpatRaster} (with any CRS), or a \code{data.frame} with
+#'   WGS84 \emph{lon} and \emph{lat} columns.
+#' @param p Species occurrence data as a \code{data.frame} (or \code{matrix})
+#'   with WGS84 \emph{lon} and \emph{lat} columns.
+#' @param n_models Number of convex hull models to build in sampled environment
+#'   space (default = 100).
+#' @param n_dim Number of dimensions (variables) of sampled convex hull models
+#'   (default = 2).
+#' @param sample_prop Proportion of environment data rows sampled for fitting
+#'   each convex hull model (default = 0.5).
+#' @param limit_occur Logical to indicate whether to limit occurrence data to
+#'   one per environment data cell (default = TRUE).
 #' @param ... Additional parameters.
 #' @return A "Rangebag" model S4 object containing slots:
 #'   \describe{
 #'     \item{\code{method}}{SDM method: "rangebag".}
-#'     \item{\code{variables}}{List of climate (or environmental) variable names.}
-#'     \item{\code{presence}}{The selected climate data corresponding to occurrences points.}
-#'     \item{\code{coordinates}}{The coordinates for the selected climate data.}
+#'     \item{\code{variables}}{List of climate (or environmental) variable
+#'       names.}
+#'     \item{\code{presence}}{The selected climate data corresponding to
+#'       occurrences points.}
+#'     \item{\code{coordinates}}{The coordinates for the selected climate
+#'       data.}
 #'     \item{\code{ch_models}}{A list of convex hull models (vertices).}
 #'   }
 #' @include Rangebag-class.R
@@ -89,6 +99,22 @@ rangebag.Raster <- function(x, p,
                       presence = fit_data,
                       coordinates = fit_coords,
                       ch_models = ch_models))
+}
+
+#' @name rangebag
+#' @export
+rangebag.SpatRaster <- function(x, p,
+                                n_models = 100,
+                                n_dim = 2,
+                                sample_prop = 0.5,
+                                limit_occur = TRUE, ...) {
+
+  # Call the Raster version of the function (swap later)
+  rangebag(raster::stack(x), p,
+           n_models = n_models,
+           n_dim = n_dim,
+           sample_prop = sample_prop,
+           limit_occur = limit_occur, ...)
 }
 
 #' @name rangebag

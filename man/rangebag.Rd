@@ -3,6 +3,7 @@
 \name{rangebag}
 \alias{rangebag}
 \alias{rangebag.Raster}
+\alias{rangebag.SpatRaster}
 \alias{rangebag.data.frame}
 \title{Range bagging SDM model building method}
 \usage{
@@ -26,6 +27,16 @@ rangebag(
   ...
 )
 
+\method{rangebag}{SpatRaster}(
+  x,
+  p,
+  n_models = 100,
+  n_dim = 2,
+  sample_prop = 0.5,
+  limit_occur = TRUE,
+  ...
+)
+
 \method{rangebag}{data.frame}(
   x,
   p,
@@ -37,17 +48,24 @@ rangebag(
 )
 }
 \arguments{
-\item{x}{Climate (or environmental) data as a \code{Raster*} (with any CRS), or a \code{data.frame} with WGS84 \emph{lon} and \emph{lat} columns.}
+\item{x}{Climate (or environmental) data as a \code{raster::Raster*} or
+\code{terra::SpatRaster} (with any CRS), or a \code{data.frame} with
+WGS84 \emph{lon} and \emph{lat} columns.}
 
-\item{p}{Species occurrence data as a \code{data.frame} (or \code{matrix}) with WGS84 \emph{lon} and \emph{lat} columns.}
+\item{p}{Species occurrence data as a \code{data.frame} (or \code{matrix})
+with WGS84 \emph{lon} and \emph{lat} columns.}
 
-\item{n_models}{Number of convex hull models to build in sampled environment space (default = 100).}
+\item{n_models}{Number of convex hull models to build in sampled environment
+space (default = 100).}
 
-\item{n_dim}{Number of dimensions (variables) of sampled convex hull models (default = 2).}
+\item{n_dim}{Number of dimensions (variables) of sampled convex hull models
+(default = 2).}
 
-\item{sample_prop}{Proportion of environment data rows sampled for fitting each convex hull model (default = 0.5).}
+\item{sample_prop}{Proportion of environment data rows sampled for fitting
+each convex hull model (default = 0.5).}
 
-\item{limit_occur}{Logical to indicate whether to limit occurrence data to one per environment data cell (default = TRUE).}
+\item{limit_occur}{Logical to indicate whether to limit occurrence data to
+one per environment data cell (default = TRUE).}
 
 \item{...}{Additional parameters.}
 }
@@ -55,9 +73,12 @@ rangebag(
 A "Rangebag" model S4 object containing slots:
 \describe{
 \item{\code{method}}{SDM method: "rangebag".}
-\item{\code{variables}}{List of climate (or environmental) variable names.}
-\item{\code{presence}}{The selected climate data corresponding to occurrences points.}
-\item{\code{coordinates}}{The coordinates for the selected climate data.}
+\item{\code{variables}}{List of climate (or environmental) variable
+names.}
+\item{\code{presence}}{The selected climate data corresponding to
+occurrences points.}
+\item{\code{coordinates}}{The coordinates for the selected climate
+data.}
 \item{\code{ch_models}}{A list of convex hull models (vertices).}
 }
 }

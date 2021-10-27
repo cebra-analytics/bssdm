@@ -10,20 +10,28 @@
 \item{object}{A "Climatch" model S4 object containing slots:
 \describe{
 \item{\code{method}}{SDM method: "rangebag".}
-\item{\code{variables}}{List of climate (or environmental) variable names.}
-\item{\code{presence}}{The selected climate data corresponding to occurrences points.}
-\item{\code{coordinates}}{The coordinates for the selected climate data.}
+\item{\code{variables}}{List of climate (or environmental) variable
+names.}
+\item{\code{presence}}{The selected climate data corresponding to
+occurrences points.}
+\item{\code{coordinates}}{The coordinates for the selected climate
+data.}
 \item{\code{ch_models}}{A list of convex hull models (vertices).}
 }}
 
-\item{x}{Climate (or environmental) data with corresponding model variables as a \code{Raster*}, \code{data.frame}, or \code{matrix}.}
+\item{x}{Climate (or environmental) data with corresponding model variables
+as a \code{raster::Raster*}, \code{terra::SpatRaster}, \code{data.frame},
+or \code{matrix}.}
 
-\item{raw_output}{Logical to indicate whether to return raw predicted values (default = TRUE) or as an object (as per \emph{x}: FALSE).}
+\item{raw_output}{Logical to indicate whether to return raw predicted values
+(default = TRUE) or as an object (as per \emph{x}: FALSE).}
 
 \item{...}{Additional parameters.}
 }
 \value{
-Predicted values as a raw vector or a \code{Raster*}, \code{data.frame}, or \code{matrix} (as per \emph{x}).
+Predicted values as a raw vector or a \code{raster::Raster*},
+\code{terra::SpatRaster}, \code{data.frame}, or \code{matrix} (as per
+\emph{x}).
 }
 \description{
 Description of Climatch SDM predict method...
