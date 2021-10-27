@@ -4,7 +4,8 @@
 #'
 #' @slot method SDM method: "rangebag".
 #' @slot variables List of climate (or environmental) variable names.
-#' @slot presence The selected climate data corresponding to occurrences points.
+#' @slot presence The selected climate data corresponding to occurrences
+#'   points.
 #' @slot coordinates The coordinates for the selected climate data.
 #' @slot ch_models A list of convex hull models (vertices).
 methods::setClass("Rangebag",

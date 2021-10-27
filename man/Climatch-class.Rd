@@ -16,9 +16,11 @@ Description of Climatch class ...
 
 \item{\code{variables}}{List of climate (or environmental) variable names.}
 
-\item{\code{sd}}{The standard deviation of each variable calculated via the climate data (\emph{x}) or the \emph{sd_data} when provided.}
+\item{\code{sd}}{The standard deviation of each variable calculated via the climate
+data (\emph{x}) or the \emph{sd_data} when provided.}
 
-\item{\code{presence}}{The selected (nearest within range) climate data for each occurrence point.}
+\item{\code{presence}}{The selected (nearest within range) climate data for each
+occurrence point.}
 
 \item{\code{coordinates}}{The coordinates for the selected climate data.}
 

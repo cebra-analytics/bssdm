@@ -14,7 +14,8 @@ Description of Rangebag class ...
 
 \item{\code{variables}}{List of climate (or environmental) variable names.}
 
-\item{\code{presence}}{The selected climate data corresponding to occurrences points.}
+\item{\code{presence}}{The selected climate data corresponding to occurrences
+points.}
 
 \item{\code{coordinates}}{The coordinates for the selected climate data.}
 

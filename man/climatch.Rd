@@ -3,6 +3,7 @@
 \name{climatch}
 \alias{climatch}
 \alias{climatch.Raster}
+\alias{climatch.SpatRaster}
 \alias{climatch.data.frame}
 \title{Climatch SDM model building method}
 \usage{
@@ -26,6 +27,16 @@ climatch(
   ...
 )
 
+\method{climatch}{SpatRaster}(
+  x,
+  p,
+  algorithm = "euclidean",
+  d_max = 50,
+  sd_data = NULL,
+  as_score = TRUE,
+  ...
+)
+
 \method{climatch}{data.frame}(
   x,
   p,
@@ -37,17 +48,25 @@ climatch(
 )
 }
 \arguments{
-\item{x}{Climate (or environmental) data as a \code{Raster*} (with any CRS), or a \code{data.frame} with WGS84 \emph{lon} and \emph{lat} columns.}
+\item{x}{Climate (or environmental) data as a \code{raster::Raster*} or
+\code{terra::SpatRaster} (with any CRS), or a \code{data.frame} with
+WGS84 \emph{lon} and \emph{lat} columns.}
 
-\item{p}{Species occurrence data as a \code{data.frame} (or \code{matrix}) with WGS84 \emph{lon} and \emph{lat} columns.}
+\item{p}{Species occurrence data as a \code{data.frame} (or \code{matrix})
+with WGS84 \emph{lon} and \emph{lat} columns.}
 
-\item{algorithm}{Climatch method algorithm selected from "euclidean" (default) or "closest_standard_score".}
+\item{algorithm}{Climatch method algorithm selected from "euclidean"
+(default) or "closest_standard_score".}
 
-\item{d_max}{Maximum range distance (default = 50 km) used when matching occurrence points to nearest climate data points/cells.}
+\item{d_max}{Maximum range distance (default = 50 km) used when matching
+occurrence points to nearest climate data points/cells.}
 
-\item{sd_data}{Optional \code{data.frame} for calculating the standard deviation for climate variable, or a \code{vector} of pre-calculated values.}
+\item{sd_data}{Optional \code{data.frame} for calculating the standard
+deviation for climate variable, or a \code{vector} of pre-calculated
+values.}
 
-\item{as_score}{Logical to indicate whether to generate a score 0-10 (default = TRUE) or values 0-1 (FALSE).}
+\item{as_score}{Logical to indicate whether to generate a score 0-10
+(default = TRUE) or values 0-1 (FALSE).}
 
 \item{...}{Additional parameters.}
 }
@@ -55,12 +74,18 @@ climatch(
 A "Climatch" model S4 object containing slots:
 \describe{
 \item{\code{method}}{SDM method: "climatch".}
-\item{\code{algorithm}}{Algorithm: "euclidean" or "closest_standard_score").}
-\item{\code{variables}}{List of climate (or environmental) variable names.}
-\item{\code{sd}}{The standard deviation of each variable calculated via the climate data (\emph{x}) or the \emph{sd_data} when provided.}
-\item{\code{presence}}{The selected (nearest within range) climate data for each occurrence point.}
-\item{\code{coordinates}}{The coordinates for the selected climate data.}
-\item{\code{as_score}}{Indication of whether to generate a score 0-10 or values 0-1.}
+\item{\code{algorithm}}{Algorithm: "euclidean" or
+"closest_standard_score").}
+\item{\code{variables}}{List of climate (or environmental) variable
+names.}
+\item{\code{sd}}{The standard deviation of each variable calculated via
+the climate data (\emph{x}) or the \emph{sd_data} when provided.}
+\item{\code{presence}}{The selected (nearest within range) climate data
+for each occurrence point.}
+\item{\code{coordinates}}{The coordinates for the selected climate
+data.}
+\item{\code{as_score}}{Indication of whether to generate a score 0-10
+or values 0-1.}
 }
 }
 \description{

@@ -18,28 +18,43 @@
 \item{object}{A "Climatch" model S4 object containing slots:
 \describe{
 \item{\code{method}}{SDM method: "climatch".}
-\item{\code{algorithm}}{Algorithm: "euclidean" or "closest_standard_score".}
-\item{\code{variables}}{List of climate (or environmental) variable names.}
-\item{\code{sd}}{The standard deviation of each variable calculated via the climate data (\emph{x}) or the \emph{sd_data} when provided.}
-\item{\code{presence}}{The selected (nearest within range) climate data for each occurrence point.}
-\item{\code{coordinates}}{The coordinates for the selected climate data.}
-\item{\code{as_score}}{Indication of whether to generate a score 0-10 (TRUE) or values 0-1 (FALSE).}
+\item{\code{algorithm}}{Algorithm: "euclidean" or
+"closest_standard_score".}
+\item{\code{variables}}{List of climate (or environmental) variable
+names.}
+\item{\code{sd}}{The standard deviation of each variable calculated via
+the climate data (\emph{x}) or the \emph{sd_data} when provided.}
+\item{\code{presence}}{The selected (nearest within range) climate data
+for each occurrence point.}
+\item{\code{coordinates}}{The coordinates for the selected climate
+data.}
+\item{\code{as_score}}{Indication of whether to generate a score 0-10
+(TRUE) or values 0-1 (FALSE).}
 }}
 
-\item{x}{Climate (or environmental) data with corresponding model variables as a \code{Raster*}, \code{data.frame}, or \code{matrix}.}
+\item{x}{Climate (or environmental) data with corresponding model variables
+as a \code{raster::Raster*}, \code{terra::SpatRaster}, \code{data.frame},
+or \code{matrix}.}
 
-\item{algorithm}{Optional (overriding) Climatch method algorithm selected from "euclidean" or "closest_standard_score".}
+\item{algorithm}{Optional (overriding) Climatch method algorithm selected
+from "euclidean" or "closest_standard_score".}
 
-\item{sd_data}{Optional (overriding) \code{data.frame} for calculating the standard deviation for climate variable, or a \code{vector} of pre-calculated values.}
+\item{sd_data}{Optional (overriding) \code{data.frame} for calculating the
+standard deviation for climate variable, or a \code{vector} of
+pre-calculated values.}
 
-\item{as_score}{Optional (overriding) logical to indicate whether to generate a score 0-10 (TRUE) or values 0-1 (FALSE).}
+\item{as_score}{Optional (overriding) logical to indicate whether to
+generate a score 0-10 (TRUE) or values 0-1 (FALSE).}
 
-\item{raw_output}{Logical to indicate whether to return raw predicted values (default = TRUE) or as an object (as per \emph{x}: FALSE).}
+\item{raw_output}{Logical to indicate whether to return raw predicted
+values (default = TRUE) or as an object (as per \emph{x}: FALSE).}
 
 \item{...}{Additional parameters.}
 }
 \value{
-Predicted values as a raw vector or a \code{Raster*}, \code{data.frame}, or \code{matrix} (as per \emph{x}).
+Predicted values as a raw vector or a \code{raster::Raster*},
+\code{terra::SpatRaster}, \code{data.frame}, or \code{matrix} (as per
+\emph{x}).
 }
 \description{
 Description of Climatch SDM predict method...

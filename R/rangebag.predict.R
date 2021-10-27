@@ -5,15 +5,23 @@
 #' @param object A "Climatch" model S4 object containing slots:
 #'   \describe{
 #'     \item{\code{method}}{SDM method: "rangebag".}
-#'     \item{\code{variables}}{List of climate (or environmental) variable names.}
-#'     \item{\code{presence}}{The selected climate data corresponding to occurrences points.}
-#'     \item{\code{coordinates}}{The coordinates for the selected climate data.}
+#'     \item{\code{variables}}{List of climate (or environmental) variable
+#'       names.}
+#'     \item{\code{presence}}{The selected climate data corresponding to
+#'       occurrences points.}
+#'     \item{\code{coordinates}}{The coordinates for the selected climate
+#'       data.}
 #'     \item{\code{ch_models}}{A list of convex hull models (vertices).}
 #'   }
-#' @param x Climate (or environmental) data with corresponding model variables as a \code{Raster*}, \code{data.frame}, or \code{matrix}.
-#' @param raw_output Logical to indicate whether to return raw predicted values (default = TRUE) or as an object (as per \emph{x}: FALSE).
+#' @param x Climate (or environmental) data with corresponding model variables
+#'   as a \code{raster::Raster*}, \code{terra::SpatRaster}, \code{data.frame},
+#'   or \code{matrix}.
+#' @param raw_output Logical to indicate whether to return raw predicted values
+#'   (default = TRUE) or as an object (as per \emph{x}: FALSE).
 #' @param ... Additional parameters.
-#' @return Predicted values as a raw vector or a \code{Raster*}, \code{data.frame}, or \code{matrix} (as per \emph{x}).
+#' @return Predicted values as a raw vector or a \code{raster::Raster*},
+#'   \code{terra::SpatRaster}, \code{data.frame}, or \code{matrix} (as per
+#'   \emph{x}).
 #' @export
 predict.Rangebag <- function(object, x,
                              raw_output = TRUE, ...) {
@@ -27,7 +35,11 @@ predict.Rangebag <- function(object, x,
 
   # Extract data values for object variables from x
   if (class(x)[1] %in% c("Raster", "RasterStack", "RasterBrick")) {
-    x_data <- raster::as.data.frame(x, xy=TRUE, na.rm = TRUE)
+    x_data <- raster::as.data.frame(x, xy = TRUE, na.rm = TRUE)
+    x_coords <- x_data[, c("x", "y")]
+    x_data <- as.matrix(x_data[, object@variables])
+  } else if (class(x)[1] == "SpatRaster") {
+    x_data <- terra::as.data.frame(x, xy = TRUE, na.rm = TRUE)
     x_coords <- x_data[, c("x", "y")]
     x_data <- as.matrix(x_data[, object@variables])
   } else if (is.data.frame(x) || is.matrix(x)) {
@@ -59,6 +71,11 @@ predict.Rangebag <- function(object, x,
                                        predicted = ch_counts/n_models),
                                  res = raster::res(x),
                                  crs = raster::crs(x)))
+  } else if (class(x)[1] == "SpatRaster") {
+    return(terra::rast(cbind(x_coords,
+                             predicted = ch_counts/n_models),
+                       type = "xyz",
+                       crs = raster::crs(x)))
   } else if (is.data.frame(x) || is.matrix(x)) {
     return(cbind(x[, which(!names(x) %in% object@variables)],
                  predicted = ch_counts/n_models))
