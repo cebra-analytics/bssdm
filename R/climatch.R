@@ -77,7 +77,7 @@ climatch.SpatRaster <- function(x, p,
                                 as_score = TRUE, ...) {
 
   # Project to lon/lat if necessary (needed for distance calculations)
-  if (!terra::islonlat(x)) {
+  if (!terra::is.lonlat(x)) {
     x <- terra::project(x, crs = "EPSG:4326")
   }
 
