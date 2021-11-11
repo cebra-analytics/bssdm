@@ -1,6 +1,7 @@
 #' Range bagging SDM model building method
 #'
-#' Description of Rangebag SDM method...
+#' The model building component of an implementation of the range bagging
+#' species distribution modelling (SDM) method (Drake, 2015).
 #'
 #' @param x Climate (or environmental) data as a \code{raster::Raster*} or
 #'   \code{terra::SpatRaster} (with any CRS), or a \code{data.frame} with
@@ -27,6 +28,10 @@
 #'       data.}
 #'     \item{\code{ch_models}}{A list of convex hull models (vertices).}
 #'   }
+#' @references Drake, J. M. (2015). Range bagging: a new method for ecological
+#'   niche modelling from presence-only data.
+#'   \emph{Journal of the Royal Society Interface}, 12(107), 20150086.
+#'   \doi{10.1098/rsif.2015.0086}
 #' @include Rangebag-class.R
 #' @export
 rangebag <- function(x, p,

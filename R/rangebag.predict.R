@@ -1,6 +1,7 @@
-#' Climatch SDM predict method
+#' Range bagging SDM predict method
 #'
-#' Description of Climatch SDM predict method...
+#' The model prediction component of an implementation of the range bagging
+#' species distribution modelling (SDM) method (Drake, 2015).
 #'
 #' @param object A "Climatch" model S4 object containing slots:
 #'   \describe{
@@ -22,6 +23,10 @@
 #' @return Predicted values as a raw vector or a \code{raster::Raster*},
 #'   \code{terra::SpatRaster}, \code{data.frame}, or \code{matrix} (as per
 #'   \emph{x}).
+#' @references Drake, J. M. (2015). Range bagging: a new method for ecological
+#'   niche modelling from presence-only data.
+#'   \emph{Journal of the Royal Society Interface}, 12(107), 20150086.
+#'   \doi{10.1098/rsif.2015.0086}
 #' @export
 predict.Rangebag <- function(object, x,
                              raw_output = TRUE, ...) {

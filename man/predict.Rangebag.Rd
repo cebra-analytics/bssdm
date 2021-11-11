@@ -2,7 +2,7 @@
 % Please edit documentation in R/rangebag.predict.R
 \name{predict.Rangebag}
 \alias{predict.Rangebag}
-\title{Climatch SDM predict method}
+\title{Range bagging SDM predict method}
 \usage{
 \method{predict}{Rangebag}(object, x, raw_output = TRUE, ...)
 }
@@ -34,5 +34,12 @@ Predicted values as a raw vector or a \code{raster::Raster*},
 \emph{x}).
 }
 \description{
-Description of Climatch SDM predict method...
+The model prediction component of an implementation of the range bagging
+species distribution modelling (SDM) method (Drake, 2015).
+}
+\references{
+Drake, J. M. (2015). Range bagging: a new method for ecological
+niche modelling from presence-only data.
+\emph{Journal of the Royal Society Interface}, 12(107), 20150086.
+\doi{10.1098/rsif.2015.0086}
 }

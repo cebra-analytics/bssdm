@@ -57,5 +57,10 @@ Predicted values as a raw vector or a \code{raster::Raster*},
 \emph{x}).
 }
 \description{
-Description of Climatch SDM predict method...
+The model prediction component of an implementation of the ABARES Climatch
+species distribution modelling (SDM) method (ABARES, 2020).
+}
+\references{
+ABARES (2020). Climatch v2.0 User Manual. Canberra.
+\url{https://climatch.cp1.agriculture.gov.au/} Accessed: November 2021.
 }

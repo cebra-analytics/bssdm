@@ -89,5 +89,10 @@ or values 0-1.}
 }
 }
 \description{
-Description of Climatch SDM method...
+The model building component of an implementation of the ABARES Climatch
+species distribution modelling (SDM) method (ABARES, 2020).
+}
+\references{
+ABARES (2020). Climatch v2.0 User Manual. Canberra.
+\url{https://climatch.cp1.agriculture.gov.au/} Accessed: November 2021.
 }

@@ -1,6 +1,7 @@
 #' Climatch SDM predict method
 #'
-#' Description of Climatch SDM predict method...
+#' The model prediction component of an implementation of the ABARES Climatch
+#' species distribution modelling (SDM) method (ABARES, 2020).
 #'
 #' @param object A "Climatch" model S4 object containing slots:
 #'   \describe{
@@ -34,6 +35,8 @@
 #' @return Predicted values as a raw vector or a \code{raster::Raster*},
 #'   \code{terra::SpatRaster}, \code{data.frame}, or \code{matrix} (as per
 #'   \emph{x}).
+#' @references ABARES (2020). Climatch v2.0 User Manual. Canberra.
+#'   \url{https://climatch.cp1.agriculture.gov.au/} Accessed: November 2021.
 #' @export
 predict.Climatch <- function(object, x,
                              algorithm = NULL,

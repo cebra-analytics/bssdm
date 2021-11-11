@@ -1,6 +1,7 @@
 #' Climatch SDM model building method
 #'
-#' Description of Climatch SDM method...
+#' The model building component of an implementation of the ABARES Climatch
+#' species distribution modelling (SDM) method (ABARES, 2020).
 #'
 #' @param x Climate (or environmental) data as a \code{raster::Raster*} or
 #'   \code{terra::SpatRaster} (with any CRS), or a \code{data.frame} with
@@ -33,6 +34,8 @@
 #'     \item{\code{as_score}}{Indication of whether to generate a score 0-10
 #'       or values 0-1.}
 #'   }
+#' @references ABARES (2020). Climatch v2.0 User Manual. Canberra.
+#'   \url{https://climatch.cp1.agriculture.gov.au/} Accessed: November 2021.
 #' @include Climatch-class.R
 #' @export
 climatch <- function(x, p,
