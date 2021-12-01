@@ -129,7 +129,8 @@ climatch.data.frame <- function(x, p,
   }
 
   # Calculate standard deviations when required
-  variables <- names(x)[3:ncol(x)]
+  first_variable_col <- (max(which(names(x) %in% c("lon", "lat"))) + 1)
+  variables <- names(x)[first_variable_col:ncol(x)]
   if (!is.null(sd_data)) {
     if (is.data.frame(sd_data)) {
       if (!all(variables %in% names(sd_data))) {
