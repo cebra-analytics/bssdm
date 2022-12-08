@@ -33,7 +33,7 @@ data.}
 }}
 
 \item{x}{Climate (or environmental) data with corresponding model variables
-as a \code{raster::Raster*}, \code{terra::SpatRaster}, \code{data.frame},
+as a \code{terra::SpatRaster}, \code{raster::Raster*}, \code{data.frame},
 or \code{matrix}.}
 
 \item{algorithm}{Optional (overriding) Climatch method algorithm selected
@@ -52,8 +52,8 @@ values (default = TRUE) or as an object (as per \emph{x}: FALSE).}
 \item{...}{Additional parameters.}
 }
 \value{
-Predicted values as a raw vector or a \code{raster::Raster*},
-\code{terra::SpatRaster}, \code{data.frame}, or \code{matrix} (as per
+Predicted values as a raw vector or a \code{terra::SpatRaster},
+\code{raster::Raster*}, \code{data.frame}, or \code{matrix} (as per
 \emph{x}).
 }
 \description{

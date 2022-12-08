@@ -4,13 +4,14 @@
 \alias{climatch}
 \alias{climatch.Raster}
 \alias{climatch.SpatRaster}
+\alias{climatch.SpatVector}
 \alias{climatch.data.frame}
 \title{Climatch SDM model building method}
 \usage{
 climatch(
   x,
   p,
-  algorithm = "euclidean",
+  algorithm = c("euclidean", "closest_standard_score"),
   d_max = 50,
   sd_data = NULL,
   as_score = TRUE,
@@ -20,7 +21,7 @@ climatch(
 \method{climatch}{Raster}(
   x,
   p,
-  algorithm = "euclidean",
+  algorithm = c("euclidean", "closest_standard_score"),
   d_max = 50,
   sd_data = NULL,
   as_score = TRUE,
@@ -30,7 +31,17 @@ climatch(
 \method{climatch}{SpatRaster}(
   x,
   p,
-  algorithm = "euclidean",
+  algorithm = c("euclidean", "closest_standard_score"),
+  d_max = 50,
+  sd_data = NULL,
+  as_score = TRUE,
+  ...
+)
+
+\method{climatch}{SpatVector}(
+  x,
+  p,
+  algorithm = c("euclidean", "closest_standard_score"),
   d_max = 50,
   sd_data = NULL,
   as_score = TRUE,
@@ -40,7 +51,7 @@ climatch(
 \method{climatch}{data.frame}(
   x,
   p,
-  algorithm = "euclidean",
+  algorithm = c("euclidean", "closest_standard_score"),
   d_max = 50,
   sd_data = NULL,
   as_score = TRUE,
@@ -48,9 +59,9 @@ climatch(
 )
 }
 \arguments{
-\item{x}{Climate (or environmental) data as a \code{raster::Raster*} or
-\code{terra::SpatRaster} (with any CRS), or a \code{data.frame} with
-WGS84 \emph{lon} and \emph{lat} columns.}
+\item{x}{Climate (or environmental) data as a \code{terra::SpatRaster},
+\code{terra::SpatVector}, or \code{raster::Raster*} (with any CRS), or a
+\code{data.frame} with WGS84 \emph{lon} and \emph{lat} columns.}
 
 \item{p}{Species occurrence data as a \code{data.frame} (or \code{matrix})
 with WGS84 \emph{lon} and \emph{lat} columns.}

@@ -3,8 +3,8 @@
 #' The model building component of an implementation of the range bagging
 #' species distribution modelling (SDM) method (Drake, 2015).
 #'
-#' @param x Climate (or environmental) data as a \code{raster::Raster*} or
-#'   \code{terra::SpatRaster} (with any CRS), or a \code{data.frame} with
+#' @param x Climate (or environmental) data as a \code{terra::SpatRaster} or
+#'   \code{raster::Raster*} (with any CRS), or a \code{data.frame} with
 #'   WGS84 \emph{lon} and \emph{lat} columns.
 #' @param p Species occurrence data as a \code{data.frame} (or \code{matrix})
 #'   with WGS84 \emph{lon} and \emph{lat} columns.
@@ -50,6 +50,22 @@ rangebag.Raster <- function(x, p,
                      sample_prop = 0.5,
                      limit_occur = TRUE, ...) {
 
+  # Call the terra version of the function
+  rangebag(terra::rast(x), p,
+           n_models = n_models,
+           n_dim = n_dim,
+           sample_prop = sample_prop,
+           limit_occur = limit_occur, ...)
+}
+
+#' @name rangebag
+#' @export
+rangebag.SpatRaster <- function(x, p,
+                                n_models = 100,
+                                n_dim = 2,
+                                sample_prop = 0.5,
+                                limit_occur = TRUE, ...) {
+
   # Check that p has sufficient columns
   p <- as.data.frame(p)
   if (ncol(p) < 2) {
@@ -62,18 +78,21 @@ rangebag.Raster <- function(x, p,
   }
 
   # Project to lon/lat if necessary
-  if (!raster::isLonLat(x)) {
-    x <- raster::projectRaster(x, crs = "EPSG:4326")
+  if (!terra::is.lonlat(x)) {
+    x <- terra::project(x, "EPSG:4326")
   }
 
   # Select data from cells in x corresponding to each occurrence point in p
-  fit_idx <- raster::cellFromXY(x, p[, c("lon", "lat")])
+  fit_idx <- terra::cellFromXY(x, p[, c("lon", "lat")])
   if (limit_occur) { # limit to one occurrence per cell
     fit_idx <- unique(fit_idx)
   }
-  fit_data <- stats::na.omit(as.data.frame(x[fit_idx]))
-  fit_coords <- as.data.frame(raster::xyFromCell(x, fit_idx))
+  fit_data <- stats::na.omit(
+    cbind(as.data.frame(terra::xyFromCell(x, fit_idx)),
+          as.data.frame(x[fit_idx])))
+  fit_coords <- fit_data[,1:2]
   names(fit_coords) <- c("lon", "lat")
+  fit_data <- fit_data[,-(1:2)]
 
   # Fit {n_models} convex hull models to data samples
   ch_models <- list()
@@ -108,22 +127,6 @@ rangebag.Raster <- function(x, p,
 
 #' @name rangebag
 #' @export
-rangebag.SpatRaster <- function(x, p,
-                                n_models = 100,
-                                n_dim = 2,
-                                sample_prop = 0.5,
-                                limit_occur = TRUE, ...) {
-
-  # Call the Raster version of the function (swap later)
-  rangebag(raster::stack(x), p,
-           n_models = n_models,
-           n_dim = n_dim,
-           sample_prop = sample_prop,
-           limit_occur = limit_occur, ...)
-}
-
-#' @name rangebag
-#' @export
 rangebag.data.frame <- function(x, p,
                                 n_models = 100,
                                 n_dim = 2,
@@ -140,12 +143,12 @@ rangebag.data.frame <- function(x, p,
     stop("Rangebag x coordinates should be 'lon' and 'lat'.", call. = FALSE)
   }
 
-  # Convert to a Raster*
+  # Convert to a terra::SpatRaster
   ordered_idx <- c(which(c("lon", "lat") %in% names(x)),
                    which(!names(x) %in% c("lon", "lat")))
-  x <- raster::rasterFromXYZ(x[, ordered_idx], crs = "EPSG:4326")
+  x <- terra::rast(x[, ordered_idx], crs = "EPSG:4326")
 
-  # Call the Raster version of the function
+  # Call the terra version of the function
   rangebag(x, p,
            n_models = n_models,
            n_dim = n_dim,

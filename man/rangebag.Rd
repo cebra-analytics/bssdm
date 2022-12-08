@@ -48,8 +48,8 @@ rangebag(
 )
 }
 \arguments{
-\item{x}{Climate (or environmental) data as a \code{raster::Raster*} or
-\code{terra::SpatRaster} (with any CRS), or a \code{data.frame} with
+\item{x}{Climate (or environmental) data as a \code{terra::SpatRaster} or
+\code{raster::Raster*} (with any CRS), or a \code{data.frame} with
 WGS84 \emph{lon} and \emph{lat} columns.}
 
 \item{p}{Species occurrence data as a \code{data.frame} (or \code{matrix})

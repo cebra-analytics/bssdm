@@ -20,7 +20,7 @@
 #'       (TRUE) or values 0-1 (FALSE).}
 #'   }
 #' @param x Climate (or environmental) data with corresponding model variables
-#'   as a \code{raster::Raster*}, \code{terra::SpatRaster}, \code{data.frame},
+#'   as a \code{terra::SpatRaster}, \code{raster::Raster*}, \code{data.frame},
 #'   or \code{matrix}.
 #' @param algorithm Optional (overriding) Climatch method algorithm selected
 #'   from "euclidean" or "closest_standard_score".
@@ -32,8 +32,8 @@
 #' @param raw_output Logical to indicate whether to return raw predicted
 #'   values (default = TRUE) or as an object (as per \emph{x}: FALSE).
 #' @param ... Additional parameters.
-#' @return Predicted values as a raw vector or a \code{raster::Raster*},
-#'   \code{terra::SpatRaster}, \code{data.frame}, or \code{matrix} (as per
+#' @return Predicted values as a raw vector or a \code{terra::SpatRaster},
+#'   \code{raster::Raster*}, \code{data.frame}, or \code{matrix} (as per
 #'   \emph{x}).
 #' @references ABARES (2020). Climatch v2.0 User Manual. Canberra.
 #'   \url{https://climatch.cp1.agriculture.gov.au/} Accessed: November 2021.

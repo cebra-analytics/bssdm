@@ -15,13 +15,13 @@
 #'     \item{\code{ch_models}}{A list of convex hull models (vertices).}
 #'   }
 #' @param x Climate (or environmental) data with corresponding model variables
-#'   as a \code{raster::Raster*}, \code{terra::SpatRaster}, \code{data.frame},
+#'   as a \code{terra::SpatRaster}, \code{raster::Raster*}, \code{data.frame},
 #'   or \code{matrix}.
 #' @param raw_output Logical to indicate whether to return raw predicted values
 #'   (default = TRUE) or as an object (as per \emph{x}: FALSE).
 #' @param ... Additional parameters.
-#' @return Predicted values as a raw vector or a \code{raster::Raster*},
-#'   \code{terra::SpatRaster}, \code{data.frame}, or \code{matrix} (as per
+#' @return Predicted values as a raw vector or a \code{terra::SpatRaster},
+#'   \code{raster::Raster*}, \code{data.frame}, or \code{matrix} (as per
 #'   \emph{x}).
 #' @references Drake, J. M. (2015). Range bagging: a new method for ecological
 #'   niche modelling from presence-only data.

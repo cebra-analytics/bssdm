@@ -20,7 +20,7 @@ data.}
 }}
 
 \item{x}{Climate (or environmental) data with corresponding model variables
-as a \code{raster::Raster*}, \code{terra::SpatRaster}, \code{data.frame},
+as a \code{terra::SpatRaster}, \code{raster::Raster*}, \code{data.frame},
 or \code{matrix}.}
 
 \item{raw_output}{Logical to indicate whether to return raw predicted values
@@ -29,8 +29,8 @@ or \code{matrix}.}
 \item{...}{Additional parameters.}
 }
 \value{
-Predicted values as a raw vector or a \code{raster::Raster*},
-\code{terra::SpatRaster}, \code{data.frame}, or \code{matrix} (as per
+Predicted values as a raw vector or a \code{terra::SpatRaster},
+\code{raster::Raster*}, \code{data.frame}, or \code{matrix} (as per
 \emph{x}).
 }
 \description{

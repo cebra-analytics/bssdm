@@ -3,9 +3,9 @@
 #' The model building component of an implementation of the ABARES Climatch
 #' species distribution modelling (SDM) method (ABARES, 2020).
 #'
-#' @param x Climate (or environmental) data as a \code{raster::Raster*} or
-#'   \code{terra::SpatRaster} (with any CRS), or a \code{data.frame} with
-#'   WGS84 \emph{lon} and \emph{lat} columns.
+#' @param x Climate (or environmental) data as a \code{terra::SpatRaster},
+#'   \code{terra::SpatVector}, or \code{raster::Raster*} (with any CRS), or a
+#'   \code{data.frame} with WGS84 \emph{lon} and \emph{lat} columns.
 #' @param p Species occurrence data as a \code{data.frame} (or \code{matrix})
 #'   with WGS84 \emph{lon} and \emph{lat} columns.
 #' @param algorithm Climatch method algorithm selected from "euclidean"
@@ -39,7 +39,7 @@
 #' @include Climatch-class.R
 #' @export
 climatch <- function(x, p,
-                     algorithm = "euclidean",
+                     algorithm = c("euclidean", "closest_standard_score"),
                      d_max = 50, # km
                      sd_data = NULL,
                      as_score = TRUE, ...) {
@@ -49,7 +49,8 @@ climatch <- function(x, p,
 #' @name climatch
 #' @export
 climatch.Raster <- function(x, p,
-                            algorithm = "euclidean",
+                            algorithm = c("euclidean",
+                                          "closest_standard_score"),
                             d_max = 50, # km
                             sd_data = NULL,
                             as_score = TRUE, ...) {
@@ -59,11 +60,12 @@ climatch.Raster <- function(x, p,
     x <- raster::projectRaster(x, crs = "EPSG:4326")
   }
 
-  # Convert x to a data frame with lon, lat, and variables
-  x <- raster::as.data.frame(x, xy = TRUE, na.rm = TRUE)
-  names(x)[1:2] <- c("lon", "lat")
+  # Convert to terra spatial vector
+  x <- terra::rast(x)
+  terra::crs(x) <- "EPSG:4326"
+  x <- terra::as.points(x, values = TRUE, na.rm = TRUE)
 
-  # Call the data frame version of the function
+  # Call the terra spatial vector version of the function
   climatch(x, p,
            algorithm = algorithm,
            d_max = d_max,
@@ -74,19 +76,63 @@ climatch.Raster <- function(x, p,
 #' @name climatch
 #' @export
 climatch.SpatRaster <- function(x, p,
-                                algorithm = "euclidean",
+                                algorithm = c("euclidean",
+                                              "closest_standard_score"),
                                 d_max = 50, # km
                                 sd_data = NULL,
                                 as_score = TRUE, ...) {
 
   # Project to lon/lat if necessary (needed for distance calculations)
   if (!terra::is.lonlat(x)) {
-    x <- terra::project(x, crs = "EPSG:4326")
+    x <- terra::project(x, "EPSG:4326")
   }
 
+  # Convert to spatial vector
+  x <- terra::as.points(x, values = TRUE, na.rm = TRUE)
+
+  # Call the terra spatial vector version of the function
+  climatch(x, p,
+           algorithm = algorithm,
+           d_max = d_max,
+           sd_data = sd_data,
+           as_score = as_score, ...)
+}
+
+#' @name climatch
+#' @export
+climatch.SpatVector <- function(x, p,
+                                algorithm = c("euclidean",
+                                              "closest_standard_score"),
+                                d_max = 50, # km
+                                sd_data = NULL,
+                                as_score = TRUE, ...) {
+
+  # Make sure p coordinate columns are 'lon' and 'lat'
+  if (!all(c("lon", "lat") %in% names(p))) {
+    stop("Climatch p coordinates should be 'lon' and 'lat'.", call. = FALSE)
+  }
+
+  # Project to x lon/lat if necessary (needed for distance calculations)
+  if (!terra::is.lonlat(x)) {
+    x <- terra::project(x, "EPSG:4326")
+  }
+
+  # Calculate standard deviations when required
+  if (is.null(sd_data)) {
+    sd_data <- unlist(lapply(x, sd))
+  }
+
+  # Select climate points within maximum range distance of occurrence points
+  p_buffer <- terra::aggregate(
+    terra::buffer(terra::vect(p, crs = "EPSG:4326"), width = d_max*1000,
+                  quadsegs = 180))
+  x <- terra::intersect(x, p_buffer)
+
   # Convert x to a data frame with lon, lat, and variables
-  x <- terra::as.data.frame(x, xy = TRUE, na.rm = TRUE)
-  names(x)[1:2] <- c("lon", "lat")
+  x <- terra::as.data.frame(x, geom = "xy")
+  coord_idx <- which(names(x) %in% c("x", "y"))
+  names(x)[coord_idx] <- c("lon", "lat")
+  x <- cbind(x[,coord_idx], x[,-coord_idx])
 
   # Call the data frame version of the function
   climatch(x, p,
@@ -99,7 +145,8 @@ climatch.SpatRaster <- function(x, p,
 #' @name climatch
 #' @export
 climatch.data.frame <- function(x, p,
-                                algorithm = "euclidean",
+                                algorithm = c("euclidean",
+                                              "closest_standard_score"),
                                 d_max = 50, # km
                                 sd_data = NULL,
                                 as_score = TRUE, ...) {
@@ -121,12 +168,8 @@ climatch.data.frame <- function(x, p,
     stop("Climatch p coordinates should be 'lon' and 'lat'.", call. = FALSE)
   }
 
-  # Check algorithm
-  if (!algorithm %in% c("euclidean", "closest_standard_score")) {
-    stop(paste("Climatch algorithm should be 'euclidean' or",
-               "'closest_standard_score'."),
-         call. = FALSE)
-  }
+  # Match algorithm
+  algorithm <- match.arg(algorithm)
 
   # Calculate standard deviations when required
   first_variable_col <- (max(which(names(x) %in% c("lon", "lat"))) + 1)
@@ -158,7 +201,7 @@ climatch.data.frame <- function(x, p,
       distances <- geodist::geodist(p[i, c("lon", "lat")],
                                     source_data[, c("lon", "lat")],
                                     measure = "cheap")/1000) # km
-    close_idx <- which(distances <= d_max*1.5) # allow for inaccuracy
+    close_idx <- which(distances <= d_max*2) # allow for inaccuracy
 
     # Recalculate close points with accurate method
     if (length(close_idx)) {
