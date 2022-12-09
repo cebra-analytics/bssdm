@@ -31,18 +31,23 @@
 #'   generate a score 0-10 (TRUE) or values 0-1 (FALSE).
 #' @param raw_output Logical to indicate whether to return raw predicted
 #'   values (default = TRUE) or as an object (as per \emph{x}: FALSE).
+#' @param parallel_cores Optional number of cores available for parallel
+#'   processing, thus enable parallel processing. Default is NULL (serial).
 #' @param ... Additional parameters.
 #' @return Predicted values as a raw vector or a \code{terra::SpatRaster},
 #'   \code{raster::Raster*}, \code{data.frame}, or \code{matrix} (as per
 #'   \emph{x}).
 #' @references ABARES (2020). Climatch v2.0 User Manual. Canberra.
 #'   \url{https://climatch.cp1.agriculture.gov.au/} Accessed: November 2021.
+#' @importFrom foreach foreach
+#' @importFrom foreach %dopar%
 #' @export
 predict.Climatch <- function(object, x,
                              algorithm = NULL,
                              sd_data = NULL,
                              as_score = NULL,
-                             raw_output = TRUE, ...) {
+                             raw_output = TRUE,
+                             parallel_cores = NULL, ...) {
 
   # Transpose presence data (for performance)
   t_y_source <- t(as.matrix(object@presence))
@@ -90,37 +95,63 @@ predict.Climatch <- function(object, x,
   if (is.null(algorithm)) {
     algorithm <- object@algorithm
   }
-
-  # Run matching algorithm (from Climatch v2.0 User Manual)
-  # for source site i, target site j, climate values y for k variables
-  d_j <- rep(0, nrow(y_target))
-  if (algorithm == "euclidean") {
-
-    # d_j = floor{[1 - min_i(sqrt(1/k*sum_k((y_ik - y_jk)^2/sd_k^2))]*10}
-    for (j in 1:nrow(y_target)) {
-      d_j[j] <- max(floor((1 - min(sqrt(
-        colMeans(((t_y_source - array(y_target[j,], dim(t_y_source)))^2/
-                    array(sd_k, dim(t_y_source))^2))
-      )))*10 + 1e-6), 0) # compensate for float inaccuracies when flooring
-    }
-
-  } else if (algorithm == "closest_standard_score") {
-
-    # d_j = 11 - min_i(max_k(cut(sqrt((y_ik - y_jk)^2/sd_k^2), {cut_values})))
+  if (algorithm == "closest_standard_score") {
     cut_values = sort(c(Inf, 3.9, 1.645, 1.285, 1.004, 0.845, 0.675, 0.525,
                         0.385, 0.255, 0.125, -Inf))
-    for (j in 1:nrow(y_target)) {
-      d_j[j] <- 11 - min(matrixStats::colMaxs(
-        array(.bincode(abs(t_y_source - array(y_target[j,], dim(t_y_source)))/
-                         array(sd_k, dim(t_y_source)),
-                       cut_values), dim(t_y_source))
-      ))
-    }
-
-  } else {
+  } else if (algorithm != "euclidean") {
     stop(paste("Climatch predict algorithm should be 'euclidean' or",
                "'closest_standard_score'."),
          call. = FALSE)
+  }
+
+  # Run matching algorithm (from Climatch v2.0 User Manual)
+  # for source site i, target site j, climate values y for k variables
+  if (!is.null(parallel_cores) && parallel_cores > 1) {
+
+    doParallel::registerDoParallel(cores = parallel_cores)
+    d_j <- foreach(
+      j = 1:nrow(y_target),
+      .combine = "c",
+      .errorhandling = c("stop"),
+      .noexport = c("object", "x", "y_coords")) %dopar% {
+        if (algorithm == "euclidean") {
+
+          # d_j = floor{[1 - min_i(sqrt(1/k*sum_k((y_ik - y_jk)^2/sd_k^2))]*10}
+          max(floor((1 - min(sqrt(
+            colMeans((t_y_source - y_target[j,])^2/sd_k^2)
+          )))*10 + 1e-6), 0) # compensate for float inaccuracies when flooring
+
+        } else if (algorithm == "closest_standard_score") {
+
+          # d_j = 11 - min_i(max_k(cut(sqrt((y_ik - y_jk)^2/sd_k^2),
+          #                            {cut_values})))
+          11 - min(matrixStats::colMaxs(
+            array(.bincode(abs(t_y_source - y_target[j,])/sd_k, cut_values),
+                  dim(t_y_source))))
+        }
+      }
+    doParallel::stopImplicitCluster()
+
+  } else { # serial
+
+    d_j <- rep(0, nrow(y_target))
+    for (j in 1:nrow(y_target)) {
+      if (algorithm == "euclidean") {
+
+        # d_j = floor{[1 - min_i(sqrt(1/k*sum_k((y_ik - y_jk)^2/sd_k^2))]*10}
+        d_j[j] <- max(floor((1 - min(sqrt(
+          colMeans((t_y_source - y_target[j,])^2/sd_k^2)
+        )))*10 + 1e-6), 0) # compensate for float inaccuracies when flooring
+
+      } else if (algorithm == "closest_standard_score") {
+
+        # d_j = 11 - min_i(max_k(cut(sqrt((y_ik - y_jk)^2/sd_k^2),
+        #                            {cut_values})))
+        d_j[j] <- 11 - min(matrixStats::colMaxs(
+          array(.bincode(abs(t_y_source - y_target[j,])/sd_k, cut_values),
+                dim(t_y_source))))
+      }
+    }
   }
 
   # Return as score 0-10 (as per Climatch site) or 0-1
