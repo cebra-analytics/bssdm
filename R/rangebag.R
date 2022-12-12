@@ -99,10 +99,10 @@ rangebag.SpatRaster <- function(x, p,
   for (i in 1:n_models) {
 
     # Sample {sample_prop} data rows and {n_dim} variable columns
-    rows <- sample(nrow(fit_data), ceiling(sample_prop*nrow(fit_data)),
-                   replace = FALSE)
     vars <- colnames(fit_data)[sample.int(ncol(fit_data), size = n_dim,
                                           replace = FALSE)]
+    rows <- sample(nrow(fit_data), ceiling(sample_prop*nrow(fit_data)),
+                   replace = FALSE)
     sample_data <- fit_data[rows, vars, drop = FALSE]
 
     # Fit convex hulls

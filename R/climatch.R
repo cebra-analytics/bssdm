@@ -195,26 +195,28 @@ climatch.data.frame <- function(x, p,
   source_data <- cbind(id = 1:nrow(x), x[, c("lon", "lat")])
   selected_idx <- c()
   for (i in 1:nrow(p)) {
+    if (nrow(source_data) > 0) {
 
-    # Use cheap distance calculation to find close points
-    suppressMessages(
-      distances <- geodist::geodist(p[i, c("lon", "lat")],
-                                    source_data[, c("lon", "lat")],
-                                    measure = "cheap")/1000) # km
-    close_idx <- which(distances <= d_max*2) # allow for inaccuracy
+      # Use cheap distance calculation to find close points
+      suppressMessages(
+        distances <- geodist::geodist(p[i, c("lon", "lat")],
+                                      source_data[, c("lon", "lat")],
+                                      measure = "cheap")/1000) # km
+      close_idx <- which(distances <= d_max*2) # allow for inaccuracy
 
-    # Recalculate close points with accurate method
-    if (length(close_idx)) {
-      distances[close_idx] <-
-        geosphere::distGeo(p[i, c("lon", "lat")],
-                           source_data[close_idx, c("lon", "lat")])/1000 # km
-    }
+      # Recalculate close points with accurate method
+      if (length(close_idx)) {
+        distances[close_idx] <-
+          geosphere::distGeo(p[i, c("lon", "lat")],
+                             source_data[close_idx, c("lon", "lat")])/1000 # km
+      }
 
-    # Add closest point when in range
-    closest <- which.min(distances)
-    if (distances[closest] <= d_max) {
-      selected_idx <- c(selected_idx, source_data$id[closest])
-      source_data <- source_data[-closest,]
+      # Add closest point when in range
+      closest <- which.min(distances)
+      if (distances[closest] <= d_max) {
+        selected_idx <- c(selected_idx, source_data$id[closest])
+        source_data <- source_data[-closest,]
+      }
     }
   }
 
