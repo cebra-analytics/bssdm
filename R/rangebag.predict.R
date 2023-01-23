@@ -42,13 +42,13 @@ predict.Rangebag <- function(object, x,
   if (class(x)[1] %in% c("Raster", "RasterStack", "RasterBrick")) {
     x_data <- raster::as.data.frame(x, xy = TRUE, na.rm = TRUE)
     x_coords <- x_data[, c("x", "y")]
-    x_data <- as.matrix(x_data[, object@variables])
+    x_data <- as.matrix(x_data[, object@variables, drop = FALSE])
   } else if (class(x)[1] == "SpatRaster") {
     x_data <- terra::as.data.frame(x, xy = TRUE, na.rm = TRUE)
     x_coords <- x_data[, c("x", "y")]
-    x_data <- as.matrix(x_data[, object@variables])
+    x_data <- as.matrix(x_data[, object@variables, drop = FALSE])
   } else if (is.data.frame(x) || is.matrix(x)) {
-    x_data <- as.matrix(x[, object@variables])
+    x_data <- as.matrix(x[, object@variables, drop = FALSE])
   }
 
   # Count the number of convex hull model fits for each x data row/cell

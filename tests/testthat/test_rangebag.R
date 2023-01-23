@@ -14,4 +14,10 @@ test_that("predicted output consistent with edmaps::range_bag", {
   expect_silent(bsrb_output <- predict(sdm.model, climate_rast,
                                        raw_output = FALSE))
   expect_equal(round(bsrb_output[][,1], 6), round(expected_rangebag[][,1], 6))
+  expect_warning(sdm.model <- rangebag(climate_rast[[1]], sample_moths),
+                 "Rangebag x data has fewer variables than n_dim.")
+  expect_silent(bsrb_output <- predict(sdm.model, climate_rast,
+                                       raw_output = FALSE))
+  expect_true(all(is.finite(bsrb_output[][,1]) ==
+                    is.finite(expected_rangebag[][,1])))
 })

@@ -66,6 +66,12 @@ rangebag.SpatRaster <- function(x, p,
                                 sample_prop = 0.5,
                                 limit_occur = TRUE, ...) {
 
+  # Ensure the number of layers are consistent with the number of dimensions
+  if (terra::nlyr(x) < n_dim) {
+    warning("Rangebag x data has fewer variables than n_dim.", call. = FALSE)
+    n_dim <- terra::nlyr(x) # adjust
+  }
+
   # Check that p has sufficient columns
   p <- as.data.frame(p)
   if (ncol(p) < 2) {
@@ -92,7 +98,7 @@ rangebag.SpatRaster <- function(x, p,
           as.data.frame(x[fit_idx])))
   fit_coords <- fit_data[,1:2]
   names(fit_coords) <- c("lon", "lat")
-  fit_data <- fit_data[,-(1:2)]
+  fit_data <- fit_data[, -(1:2), drop = FALSE]
 
   # Fit {n_models} convex hull models to data samples
   ch_models <- list()
