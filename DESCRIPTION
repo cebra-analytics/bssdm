@@ -1,6 +1,6 @@
 Package: bssdm
 Title: Biosecurity Species Distribution Modelling
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(
     person("Sean", "Haythorne", email = "sean.haythorne@unimelb.edu.au", role = c("aut", "cre")),
     person("James", "Camac", email = "james.camac@unimelb.edu.au", role = c("aut")),
