@@ -10,7 +10,7 @@
   algorithm = NULL,
   sd_data = NULL,
   as_score = NULL,
-  raw_output = TRUE,
+  raw_output = NULL,
   parallel_cores = NULL,
   ...
 )
@@ -48,7 +48,8 @@ pre-calculated values.}
 generate a score 0-10 (TRUE) or values 0-1 (FALSE).}
 
 \item{raw_output}{Logical to indicate whether to return raw predicted
-values (default = TRUE) or as an object (as per \emph{x}: FALSE).}
+values (TRUE) or as an object (as per \emph{x}: FALSE). Default is NULL,
+returning either raw values or a spatial raster (as per \emph{x}).}
 
 \item{parallel_cores}{Optional number of cores available for parallel
 processing, thus enable parallel processing. Default is NULL (serial).}

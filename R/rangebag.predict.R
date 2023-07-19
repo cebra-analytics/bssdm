@@ -17,8 +17,9 @@
 #' @param x Climate (or environmental) data with corresponding model variables
 #'   as a \code{terra::SpatRaster}, \code{raster::Raster*}, \code{data.frame},
 #'   or \code{matrix}.
-#' @param raw_output Logical to indicate whether to return raw predicted values
-#'   (default = TRUE) or as an object (as per \emph{x}: FALSE).
+#' @param raw_output Logical to indicate whether to return raw predicted
+#'   values (TRUE) or as an object (as per \emph{x}: FALSE). Default is NULL,
+#'   returning either raw values or a spatial raster (as per \emph{x}).
 #' @param ... Additional parameters.
 #' @return Predicted values as a raw vector or a \code{terra::SpatRaster},
 #'   \code{raster::Raster*}, \code{data.frame}, or \code{matrix} (as per
@@ -29,7 +30,7 @@
 #'   \doi{10.1098/rsif.2015.0086}
 #' @export
 predict.Rangebag <- function(object, x,
-                             raw_output = TRUE, ...) {
+                             raw_output = NULL, ...) {
 
   # Ensure x data has matching object variables
   if (!(all(object@variables %in% names(x)) ||
@@ -69,6 +70,13 @@ predict.Rangebag <- function(object, x,
   }
 
   # Return the count fraction as a raw vector, raster or data frame
+  if (is.null(raw_output)) {
+    if (is.data.frame(x) || is.matrix(x)) {
+      raw_output <- TRUE
+    } else {
+      raw_output <- FALSE
+    }
+  }
   if (raw_output) {
     return(ch_counts/n_models)
   } else if (class(x)[1] %in% c("Raster", "RasterStack", "RasterBrick")) {

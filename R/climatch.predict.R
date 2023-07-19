@@ -30,7 +30,8 @@
 #' @param as_score Optional (overriding) logical to indicate whether to
 #'   generate a score 0-10 (TRUE) or values 0-1 (FALSE).
 #' @param raw_output Logical to indicate whether to return raw predicted
-#'   values (default = TRUE) or as an object (as per \emph{x}: FALSE).
+#'   values (TRUE) or as an object (as per \emph{x}: FALSE). Default is NULL,
+#'   returning either raw values or a spatial raster (as per \emph{x}).
 #' @param parallel_cores Optional number of cores available for parallel
 #'   processing, thus enable parallel processing. Default is NULL (serial).
 #' @param ... Additional parameters.
@@ -46,7 +47,7 @@ predict.Climatch <- function(object, x,
                              algorithm = NULL,
                              sd_data = NULL,
                              as_score = NULL,
-                             raw_output = TRUE,
+                             raw_output = NULL,
                              parallel_cores = NULL, ...) {
 
   # Transpose presence data (for performance)
@@ -163,6 +164,13 @@ predict.Climatch <- function(object, x,
   }
 
   # Return a raw vector, raster or data frame
+  if (is.null(raw_output)) {
+    if (is.data.frame(x) || is.matrix(x)) {
+      raw_output <- TRUE
+    } else {
+      raw_output <- FALSE
+    }
+  }
   if (raw_output) {
     return(d_j)
   } else if (class(x)[1] %in% c("Raster", "RasterStack", "RasterBrick")) {
