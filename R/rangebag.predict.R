@@ -83,10 +83,12 @@ predict.Rangebag <- function(object, x,
   if (raw_output) {
     return(ch_counts/n_models)
   } else if (class(x)[1] %in% c("Raster", "RasterStack", "RasterBrick")) {
-    return(raster::extend(
+    output_rast <- raster::extend(
       raster::rasterFromXYZ(cbind(x_coords, predicted = ch_counts/n_models),
                             res = raster::res(x), crs = raster::crs(x)),
-      raster::extent(x), filename = filename))
+      raster::extent(x))
+    if (filename != "") raster::writeRaster(output_rast, filename)
+    return(output_rast)
   } else if (class(x)[1] == "SpatRaster") {
     return(terra::extend(
       terra::rast(cbind(x_coords, predicted = ch_counts/n_models),
