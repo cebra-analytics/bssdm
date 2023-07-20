@@ -4,7 +4,7 @@
 \alias{predict.Rangebag}
 \title{Range bagging SDM predict method}
 \usage{
-\method{predict}{Rangebag}(object, x, raw_output = NULL, ...)
+\method{predict}{Rangebag}(object, x, raw_output = NULL, filename = "", ...)
 }
 \arguments{
 \item{object}{A "Climatch" model S4 object containing slots:
@@ -26,6 +26,9 @@ or \code{matrix}.}
 \item{raw_output}{Logical to indicate whether to return raw predicted
 values (TRUE) or as an object (as per \emph{x}: FALSE). Default is NULL,
 returning either raw values or a spatial raster (as per \emph{x}).}
+
+\item{filename}{Optional filename for writing spatial raster output (only).
+Default is "".}
 
 \item{...}{Additional parameters.}
 }

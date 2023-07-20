@@ -32,6 +32,8 @@
 #' @param raw_output Logical to indicate whether to return raw predicted
 #'   values (TRUE) or as an object (as per \emph{x}: FALSE). Default is NULL,
 #'   returning either raw values or a spatial raster (as per \emph{x}).
+#' @param filename Optional filename for writing spatial raster output (only).
+#'   Default is "".
 #' @param parallel_cores Optional number of cores available for parallel
 #'   processing, thus enable parallel processing. Default is NULL (serial).
 #' @param ... Additional parameters.
@@ -48,6 +50,7 @@ predict.Climatch <- function(object, x,
                              sd_data = NULL,
                              as_score = NULL,
                              raw_output = NULL,
+                             filename = "",
                              parallel_cores = NULL, ...) {
 
   # Transpose presence data (for performance)
@@ -177,11 +180,12 @@ predict.Climatch <- function(object, x,
     return(raster::extend(
       raster::rasterFromXYZ(cbind(y_coords, predicted = d_j),
                             res = raster::res(x), crs = raster::crs(x)),
-      raster::extent(x)))
+      raster::extent(x), filename = filename))
   } else if (class(x)[1] == "SpatRaster") {
     return(terra::extend(
       terra::rast(cbind(y_coords, predicted = d_j),
-                  type = "xyz", crs = raster::crs(x)), terra::ext(x)))
+                  type = "xyz", crs = raster::crs(x)), terra::ext(x),
+      filename = filename))
   } else if (is.data.frame(x) || is.matrix(x)) {
     return(cbind(x[, which(!names(x) %in% object@variables)],
                  predicted = d_j))

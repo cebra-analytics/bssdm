@@ -11,6 +11,7 @@
   sd_data = NULL,
   as_score = NULL,
   raw_output = NULL,
+  filename = "",
   parallel_cores = NULL,
   ...
 )
@@ -50,6 +51,9 @@ generate a score 0-10 (TRUE) or values 0-1 (FALSE).}
 \item{raw_output}{Logical to indicate whether to return raw predicted
 values (TRUE) or as an object (as per \emph{x}: FALSE). Default is NULL,
 returning either raw values or a spatial raster (as per \emph{x}).}
+
+\item{filename}{Optional filename for writing spatial raster output (only).
+Default is "".}
 
 \item{parallel_cores}{Optional number of cores available for parallel
 processing, thus enable parallel processing. Default is NULL (serial).}

@@ -20,6 +20,8 @@
 #' @param raw_output Logical to indicate whether to return raw predicted
 #'   values (TRUE) or as an object (as per \emph{x}: FALSE). Default is NULL,
 #'   returning either raw values or a spatial raster (as per \emph{x}).
+#' @param filename Optional filename for writing spatial raster output (only).
+#'   Default is "".
 #' @param ... Additional parameters.
 #' @return Predicted values as a raw vector or a \code{terra::SpatRaster},
 #'   \code{raster::Raster*}, \code{data.frame}, or \code{matrix} (as per
@@ -30,7 +32,8 @@
 #'   \doi{10.1098/rsif.2015.0086}
 #' @export
 predict.Rangebag <- function(object, x,
-                             raw_output = NULL, ...) {
+                             raw_output = NULL,
+                             filename = "", ...) {
 
   # Ensure x data has matching object variables
   if (!(all(object@variables %in% names(x)) ||
@@ -83,11 +86,12 @@ predict.Rangebag <- function(object, x,
     return(raster::extend(
       raster::rasterFromXYZ(cbind(x_coords, predicted = ch_counts/n_models),
                             res = raster::res(x), crs = raster::crs(x)),
-      raster::extent(x)))
+      raster::extent(x), filename = filename))
   } else if (class(x)[1] == "SpatRaster") {
     return(terra::extend(
       terra::rast(cbind(x_coords, predicted = ch_counts/n_models),
-                  type = "xyz", crs = terra::crs(x)), terra::ext(x)))
+                  type = "xyz", crs = terra::crs(x)), terra::ext(x),
+      filename = filename))
   } else if (is.data.frame(x) || is.matrix(x)) {
     return(cbind(x[, which(!names(x) %in% object@variables)],
                  predicted = ch_counts/n_models))
