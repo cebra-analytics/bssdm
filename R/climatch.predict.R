@@ -181,7 +181,7 @@ predict.Climatch <- function(object, x,
       raster::rasterFromXYZ(cbind(y_coords, predicted = d_j),
                             res = raster::res(x), crs = raster::crs(x)),
       raster::extent(x))
-    if (filename != "") raster::writeRaster(output_rast, filename)
+    if (filename != "") terra::writeRaster(terra::rast(output_rast), filename)
     return(output_rast)
   } else if (class(x)[1] == "SpatRaster") {
     return(terra::extend(
