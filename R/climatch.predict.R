@@ -182,7 +182,7 @@ predict.Climatch <- function(object, x,
                             res = raster::res(x), crs = raster::crs(x)),
       raster::extent(x))
     if (filename != "") {
-      output_rast <- raster::writeRaster(output_rast, filename)
+      output_rast <- raster::writeRaster(output_rast, filename) #
     }
     return(output_rast)
   } else if (class(x)[1] == "SpatRaster") {
