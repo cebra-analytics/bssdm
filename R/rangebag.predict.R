@@ -41,6 +41,7 @@ predict.Rangebag <- function(object, x,
     stop("Rangebag predict x should have same variables as object.",
          call. = FALSE)
   }
+  message("latest 0.1.4")
 
   # Extract data values for object variables from x
   if (class(x)[1] %in% c("Raster", "RasterStack", "RasterBrick")) {
