@@ -1,6 +1,6 @@
 Package: bssdm
 Title: Biosecurity Species Distribution Modelling
-Version: 0.1.4
+Version: 0.1.5
 Authors@R: c(
     person("Sean", "Haythorne", email = "sean.haythorne@unimelb.edu.au", role = c("aut", "cre")),
     person("James", "Camac", email = "james.camac@unimelb.edu.au", role = c("aut")),
@@ -19,6 +19,7 @@ Imports:
     geodist (>= 0.0.7),
     geometry (>= 0.4.5),
     geosphere (>= 1.5.10),
+    matrixStats (>= 1.0.0),
     raster (>= 3.5.2),
     terra (>= 1.6.47)
 Suggests:
