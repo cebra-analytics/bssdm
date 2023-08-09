@@ -67,13 +67,13 @@ predict.Climatch <- function(object, x,
   if (class(x)[1] %in% c("Raster", "RasterStack", "RasterBrick")) {
     y_target <- as.matrix(raster::as.data.frame(x, xy = TRUE, na.rm = TRUE))
     y_coords <- y_target[, c("x", "y")]
-    y_target <- y_target[, object@variables]
+    y_target <- y_target[, object@variables, drop = FALSE]
   } else if (class(x)[1] == "SpatRaster") {
     y_target <- as.matrix(terra::as.data.frame(x, xy = TRUE, na.rm = TRUE))
     y_coords <- y_target[, c("x", "y")]
-    y_target <- y_target[, object@variables]
+    y_target <- y_target[, object@variables, drop = FALSE]
   } else if (is.data.frame(x) || is.matrix(x)) {
-    y_target <- as.matrix(x[, object@variables])
+    y_target <- as.matrix(x[, object@variables, drop = FALSE])
   }
 
   # Calculate standard deviations when required
