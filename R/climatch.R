@@ -226,7 +226,7 @@ climatch.data.frame <- function(x, p,
                       algorithm = algorithm,
                       variables = variables,
                       sd = sd_data,
-                      presence = x[selected_idx, variables],
+                      presence = x[selected_idx, variables, drop = FALSE],
                       coordinates = x[selected_idx, c("lon", "lat")],
                       as_score = as_score))
 }
