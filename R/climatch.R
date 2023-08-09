@@ -132,7 +132,7 @@ climatch.SpatVector <- function(x, p,
   x <- terra::as.data.frame(x, geom = "xy")
   coord_idx <- which(names(x) %in% c("x", "y"))
   names(x)[coord_idx] <- c("lon", "lat")
-  x <- cbind(x[,coord_idx], x[,-coord_idx])
+  x <- cbind(x[,coord_idx], x[,-coord_idx, drop = FALSE])
 
   # Call the data frame version of the function
   climatch(x, p,
