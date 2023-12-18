@@ -7,7 +7,7 @@
 \method{predict}{Rangebag}(object, x, raw_output = NULL, filename = "", ...)
 }
 \arguments{
-\item{object}{A "Climatch" model S4 object containing slots:
+\item{object}{A "Rangebag" model S4 object containing slots:
 \describe{
 \item{\code{method}}{SDM method: "rangebag".}
 \item{\code{variables}}{List of climate (or environmental) variable

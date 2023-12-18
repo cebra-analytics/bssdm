@@ -3,7 +3,7 @@
 #' The model prediction component of an implementation of the range bagging
 #' species distribution modelling (SDM) method (Drake, 2015).
 #'
-#' @param object A "Climatch" model S4 object containing slots:
+#' @param object A "Rangebag" model S4 object containing slots:
 #'   \describe{
 #'     \item{\code{method}}{SDM method: "rangebag".}
 #'     \item{\code{variables}}{List of climate (or environmental) variable
