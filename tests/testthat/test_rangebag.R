@@ -22,9 +22,10 @@ test_that("predicted output consistent with edmaps::range_bag", {
                     is.finite(expected_rangebag[][,1])))
   alt_ext <- c(1, 3, 40.5, 42.5)
   climate_rast_alt <- terra::extend(terra::crop(climate_rast, alt_ext),
-                                    alt_ext)
+                                    terra::ext(alt_ext))
   expected_rangebag_alt <- terra::extend(terra::crop(expected_rangebag,
-                                                     alt_ext), alt_ext)
+                                                     alt_ext),
+                                         terra::ext(alt_ext))
   expect_silent(bsrb_output_alt <- predict(sdm.model, climate_rast_alt,
                                            raw_output = FALSE))
   expect_true(terra::ext(bsrb_output_alt) == terra::ext(climate_rast_alt))
