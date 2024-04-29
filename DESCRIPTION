@@ -1,13 +1,13 @@
 Package: bssdm
 Title: Biosecurity Species Distribution Modelling
-Version: 0.1.6
+Version: 0.2.0
 Authors@R: c(
     person("Sean", "Haythorne", email = "sean.haythorne@unimelb.edu.au", role = c("aut", "cre")),
     person("James", "Camac", email = "james.camac@unimelb.edu.au", role = c("aut")),
     person("John", "Baumgartner", email = "john.baumgartner@unimelb.edu.au", role = c("aut")))
 Description: Biosecurity Species Distribution Modelling...
 Depends: R (>= 4.0)
-License: GPL-3
+License: GPL (>=3)
 URL: https://github.com/cebra-analytics/bssdm
 Encoding: UTF-8
 LazyData: true
