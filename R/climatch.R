@@ -82,15 +82,30 @@ climatch.SpatRaster <- function(x, p,
                                 sd_data = NULL,
                                 as_score = TRUE, ...) {
 
+  # Calculate standard deviations when required
+  if (is.null(sd_data)) {
+    sd_data <- unlist(t(terra::global(x, fun = "sd", na.rm = TRUE)))[1,]
+  }
+
   # Project to lon/lat if necessary (needed for distance calculations)
   if (!terra::is.lonlat(x)) {
     x <- terra::project(x, "EPSG:4326")
   }
 
-  # Convert to spatial vector
-  x <- terra::as.points(x, values = TRUE, na.rm = TRUE)
+  # Select climate cells within maximum range distance of occurrence points
+  n_vars <- terra::nlyr(x)
+  p_buffer <- terra::aggregate(
+    terra::buffer(terra::vect(p, crs = "EPSG:4326"), width = d_max*1000,
+                  quadsegs = 180))
+  x <- stats::na.omit(as.data.frame(terra::extract(x, p_buffer, xy = TRUE,
+                                                   ID = FALSE, raw = TRUE)))
 
-  # Call the terra spatial vector version of the function
+  # Convert x to a data frame with lon, lat, and variables
+  coord_idx <- which(names(x) %in% c("x", "y"))
+  names(x)[coord_idx] <- c("lon", "lat")
+  x <- x[,c(coord_idx, 1:n_vars)]
+
+  # Call the data frame version of the function
   climatch(x, p,
            algorithm = algorithm,
            d_max = d_max,
@@ -112,14 +127,14 @@ climatch.SpatVector <- function(x, p,
     stop("Climatch p coordinates should be 'lon' and 'lat'.", call. = FALSE)
   }
 
-  # Project to x lon/lat if necessary (needed for distance calculations)
-  if (!terra::is.lonlat(x)) {
-    x <- terra::project(x, "EPSG:4326")
-  }
-
   # Calculate standard deviations when required
   if (is.null(sd_data)) {
     sd_data <- unlist(lapply(x, sd))
+  }
+
+  # Project to x lon/lat if necessary (needed for distance calculations)
+  if (!terra::is.lonlat(x)) {
+    x <- terra::project(x, "EPSG:4326")
   }
 
   # Select climate points within maximum range distance of occurrence points
