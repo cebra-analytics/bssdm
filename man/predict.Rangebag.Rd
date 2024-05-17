@@ -4,7 +4,14 @@
 \alias{predict.Rangebag}
 \title{Range bagging SDM predict method}
 \usage{
-\method{predict}{Rangebag}(object, x, raw_output = NULL, filename = "", ...)
+\method{predict}{Rangebag}(
+  object,
+  x,
+  raw_output = NULL,
+  filename = "",
+  parallel_cores = NULL,
+  ...
+)
 }
 \arguments{
 \item{object}{A "Rangebag" model S4 object containing slots:
@@ -29,6 +36,9 @@ returning either raw values or a spatial raster (as per \emph{x}).}
 
 \item{filename}{Optional filename for writing spatial raster output (only).
 Default is "".}
+
+\item{parallel_cores}{Optional number of cores available for parallel
+processing, thus enable parallel processing. Default is NULL (serial).}
 
 \item{...}{Additional parameters.}
 }

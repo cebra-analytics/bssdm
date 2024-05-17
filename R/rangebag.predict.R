@@ -22,6 +22,8 @@
 #'   returning either raw values or a spatial raster (as per \emph{x}).
 #' @param filename Optional filename for writing spatial raster output (only).
 #'   Default is "".
+#' @param parallel_cores Optional number of cores available for parallel
+#'   processing, thus enable parallel processing. Default is NULL (serial).
 #' @param ... Additional parameters.
 #' @return Predicted values as a raw vector or a \code{terra::SpatRaster},
 #'   \code{raster::Raster*}, \code{data.frame}, or \code{matrix} (as per
@@ -30,10 +32,13 @@
 #'   niche modelling from presence-only data.
 #'   \emph{Journal of the Royal Society Interface}, 12(107), 20150086.
 #'   \doi{10.1098/rsif.2015.0086}
+#' @importFrom foreach foreach
+#' @importFrom foreach %dopar%
 #' @export
 predict.Rangebag <- function(object, x,
                              raw_output = NULL,
-                             filename = "", ...) {
+                             filename = "",
+                             parallel_cores = NULL, ...) {
 
   # Ensure x data has matching object variables
   if (!(all(object@variables %in% names(x)) ||
@@ -42,34 +47,101 @@ predict.Rangebag <- function(object, x,
          call. = FALSE)
   }
 
-  # Extract data values for object variables from x
+  # Convert x raster to terra
+  x_is_raster <- FALSE
   if (class(x)[1] %in% c("Raster", "RasterStack", "RasterBrick")) {
-    x_data <- raster::as.data.frame(x, xy = TRUE, na.rm = TRUE)
-    x_coords <- x_data[, c("x", "y")]
-    x_data <- as.matrix(x_data[, object@variables, drop = FALSE])
-  } else if (class(x)[1] == "SpatRaster") {
-    x_data <- terra::as.data.frame(x, xy = TRUE, na.rm = TRUE)
-    x_coords <- x_data[, c("x", "y")]
-    x_data <- as.matrix(x_data[, object@variables, drop = FALSE])
-  } else if (is.data.frame(x) || is.matrix(x)) {
-    x_data <- as.matrix(x[, object@variables, drop = FALSE])
+    x_is_raster <- TRUE
+    x <- terra::rast(x)
   }
 
-  # Count the number of convex hull model fits for each x data row/cell
+  # Handle terra raster data in blocks
+  if (class(x)[1] == "SpatRaster") {
+    x_blocks <- terra::blocks(x)
+    n_blocks <- x_blocks$n
+    terra::readStart(x)
+    output_rast <- terra::rast(x[[1]])
+    terra::writeStart(output_rast, filename = filename, ...)
+  } else {
+    n_blocks <- 1
+  }
+
+  # Calculate the proportion of models that fit each location
   n_models <- length(object@ch_models)
   n_dim <- ncol(object@ch_models[[1]])
-  ch_counts <- numeric(nrow(x_data))
-  for (i in 1:n_models) {
-    vars <- colnames(object@ch_models[[i]])
-    if (n_dim == 1) {
-      data_in_ch <- (x_data[, vars] >= object@ch_models[[i]][1, 1] &
-                       x_data[, vars] <= object@ch_models[[i]][2, 1])
-    } else {
-      data_in_ch <- geometry::inhulln(
-        geometry::convhulln(object@ch_models[[i]], options='Pp'),
-        x_data[, vars])
+  if (n_dim > 1) {
+    hulls <- lapply(object@ch_models, function(model) {
+      geometry::convhulln(model, options='Pp')})
+  }
+  for (b in 1:n_blocks) {
+
+    # Extract (block) data values for object variables from x
+    if (class(x)[1] == "SpatRaster") {
+      x_data <- terra::readValues(x,
+                                  row = x_blocks$row[b],
+                                  nrows = x_blocks$nrows[b],
+                                  col = 1,
+                                  ncols = terra::ncol(x),
+                                  mat = TRUE)
+      output_data <- rep(NA, nrow(x_data))
+      x_data <- x_data[, object@variables, drop = FALSE]
+      x_idx <- which(as.logical(rowSums(!is.na(x_data))))
+      x_data <- x_data[x_idx,, drop = FALSE]
+    } else if (is.data.frame(x) || is.matrix(x)) {
+      x_data <- as.matrix(x[, object@variables, drop = FALSE])
     }
-    ch_counts <- ch_counts + data_in_ch
+
+    # Count the proportion of convex hull model fits for each x data row/cell
+    if (nrow(x_data) > 0) {
+
+      # Parallel
+      if (!is.null(parallel_cores) && parallel_cores > 1) {
+        doParallel::registerDoParallel(cores = parallel_cores)
+        ch_counts <- foreach(
+          i = 1:n_models,
+          .combine = "+",
+          .errorhandling = c("stop"),
+          .export = c("x_data", "object", "hulls"),
+          .noexport = c("x")) %dopar% {
+            vars <- colnames(object@ch_models[[i]])
+            if (n_dim == 1) {
+              (x_data[, vars] >= object@ch_models[[i]][1, 1] &
+                 x_data[, vars] <= object@ch_models[[i]][2, 1])/n_models
+            } else {
+              geometry::inhulln(hulls[[i]], x_data[, vars])/n_models
+            }
+          }
+        doParallel::stopImplicitCluster()
+
+      } else { # serial
+        ch_counts <- numeric(nrow(x_data))
+        for (i in 1:n_models) {
+          vars <- colnames(object@ch_models[[i]])
+          if (n_dim == 1) {
+            data_in_ch <- (x_data[, vars] >= object@ch_models[[i]][1, 1] &
+                             x_data[, vars] <= object@ch_models[[i]][2, 1])
+          } else {
+            data_in_ch <- geometry::inhulln(hulls[[i]], x_data[, vars])
+          }
+          ch_counts <- ch_counts + data_in_ch/n_models
+        }
+      }
+
+      if (class(x)[1] == "SpatRaster") {
+        output_data[x_idx] <- ch_counts
+      }
+    }
+
+    # Write output block
+    if (class(x)[1] == "SpatRaster") {
+      terra::writeValues(output_rast, v = output_data,
+                         start = x_blocks$row[b], nrows = x_blocks$nrows[b])
+    }
+  }
+
+  # Close block reading & writing
+  if (class(x)[1] == "SpatRaster") {
+    terra::readStop(x)
+    terra::writeStop(output_rast)
   }
 
   # Return the count fraction as a raw vector, raster or data frame
@@ -80,24 +152,14 @@ predict.Rangebag <- function(object, x,
       raw_output <- FALSE
     }
   }
-  if (raw_output) {
-    return(ch_counts/n_models)
-  } else if (class(x)[1] %in% c("Raster", "RasterStack", "RasterBrick")) {
-    output_rast <- raster::extend(
-      raster::rasterFromXYZ(cbind(x_coords, predicted = ch_counts/n_models),
-                            res = raster::res(x), crs = raster::crs(x)),
-      raster::extent(x))
-    if (filename != "") {
-      output_rast <- raster::writeRaster(output_rast, filename)
-    }
-    return(output_rast)
+  if (raw_output && n_blocks == 1) {
+    return(ch_counts)
+  } else if (x_is_raster) {
+    return(raster::raster(output_rast))
   } else if (class(x)[1] == "SpatRaster") {
-    return(terra::extend(
-      terra::rast(cbind(x_coords, predicted = ch_counts/n_models),
-                  type = "xyz", crs = terra::crs(x)), terra::ext(x),
-      filename = filename))
+    return(output_rast)
   } else if (is.data.frame(x) || is.matrix(x)) {
     return(cbind(x[, which(!names(x) %in% object@variables)],
-                 predicted = ch_counts/n_models))
+                 predicted = ch_counts))
   }
 }
