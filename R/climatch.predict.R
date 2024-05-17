@@ -112,27 +112,38 @@ predict.Climatch <- function(object, x,
   # for source site i, target site j, climate values y for k variables
   if (!is.null(parallel_cores) && parallel_cores > 1) {
 
+    # Split the target data rows into groups
+    n_groups <- min(nrow(y_target), parallel_cores*100)
+    row_groups <- split(1:nrow(y_target),
+                        cut(seq_along(1:nrow(y_target)),
+                            breaks = n_groups, labels = FALSE))
+
     doParallel::registerDoParallel(cores = parallel_cores)
     d_j <- foreach(
-      j = 1:nrow(y_target),
+      g = 1:n_groups,
       .combine = "c",
       .errorhandling = c("stop"),
       .noexport = c("object", "x", "y_coords")) %dopar% {
-        if (algorithm == "euclidean") {
+        d_j_g <- rep(0, length(row_groups[[g]]))
+        for (i in 1:length(row_groups[[g]])) {
+          j <- row_groups[[g]][i]
+          if (algorithm == "euclidean") {
 
-          # d_j = floor{[1 - min_i(sqrt(1/k*sum_k((y_ik - y_jk)^2/sd_k^2))]*10}
-          max(floor((1 - min(sqrt(
-            colMeans((t_y_source - y_target[j,])^2/sd_k^2)
-          )))*10 + 1e-6), 0) # compensate for float inaccuracies when flooring
+            # d_j = floor{[1 - min_i(sqrt(1/k*sum_k((y_ik - y_jk)^2/sd_k^2))]*10}
+            d_j_g[i] <- max(floor((1 - min(sqrt(
+              colMeans((t_y_source - y_target[j,])^2/sd_k^2)
+            )))*10 + 1e-6), 0) # compensate for float inaccuracies when flooring
 
-        } else if (algorithm == "closest_standard_score") {
+          } else if (algorithm == "closest_standard_score") {
 
-          # d_j = 11 - min_i(max_k(cut(sqrt((y_ik - y_jk)^2/sd_k^2),
-          #                            {cut_values})))
-          11 - min(matrixStats::colMaxs(
-            array(.bincode(abs(t_y_source - y_target[j,])/sd_k, cut_values),
-                  dim(t_y_source))))
+            # d_j = 11 - min_i(max_k(cut(sqrt((y_ik - y_jk)^2/sd_k^2),
+            #                            {cut_values})))
+            d_j_g[i] <- 11 - min(matrixStats::colMaxs(
+              array(.bincode(abs(t_y_source - y_target[j,])/sd_k, cut_values),
+                    dim(t_y_source))))
+          }
         }
+        d_j_g
       }
     doParallel::stopImplicitCluster()
 
