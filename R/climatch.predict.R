@@ -63,17 +63,11 @@ predict.Climatch <- function(object, x,
          call. = FALSE)
   }
 
-  # Extract data values for object variables from x
+  # Convert x raster to terra
+  x_is_raster <- FALSE
   if (class(x)[1] %in% c("Raster", "RasterStack", "RasterBrick")) {
-    y_target <- as.matrix(raster::as.data.frame(x, xy = TRUE, na.rm = TRUE))
-    y_coords <- y_target[, c("x", "y")]
-    y_target <- y_target[, object@variables, drop = FALSE]
-  } else if (class(x)[1] == "SpatRaster") {
-    y_target <- as.matrix(terra::as.data.frame(x, xy = TRUE, na.rm = TRUE))
-    y_coords <- y_target[, c("x", "y")]
-    y_target <- y_target[, object@variables, drop = FALSE]
-  } else if (is.data.frame(x) || is.matrix(x)) {
-    y_target <- as.matrix(x[, object@variables, drop = FALSE])
+    x_is_raster <- TRUE
+    x <- terra::rast(x)
   }
 
   # Calculate standard deviations when required
@@ -100,81 +94,137 @@ predict.Climatch <- function(object, x,
     algorithm <- object@algorithm
   }
   if (algorithm == "closest_standard_score") {
-    cut_values = sort(c(Inf, 3.9, 1.645, 1.285, 1.004, 0.845, 0.675, 0.525,
-                        0.385, 0.255, 0.125, -Inf))
+    cut_values <- sort(c(Inf, 3.9, 1.645, 1.285, 1.004, 0.845, 0.675, 0.525,
+                         0.385, 0.255, 0.125, -Inf))
   } else if (algorithm != "euclidean") {
     stop(paste("Climatch predict algorithm should be 'euclidean' or",
                "'closest_standard_score'."),
          call. = FALSE)
   }
 
-  # Run matching algorithm (from Climatch v2.0 User Manual)
-  # for source site i, target site j, climate values y for k variables
-  if (!is.null(parallel_cores) && parallel_cores > 1) {
+  # As score 0-10 (as per Climatch site) or 0-1
+  if (is.null(as_score)) {
+    as_score <- object@as_score
+  }
 
-    # Split the target data rows into groups
-    n_groups <- min(nrow(y_target), parallel_cores*100)
-    row_groups <- split(1:nrow(y_target),
-                        cut(seq_along(1:nrow(y_target)),
-                            breaks = n_groups, labels = FALSE))
+  # Handle terra raster data in blocks
+  if (class(x)[1] == "SpatRaster") {
+    n_cores <- ifelse(is.numeric(parallel_cores), parallel_cores, 1)
+    x_blocks <- terra::blocks(x, n = 4*n_cores)
+    n_blocks <- x_blocks$n
+    terra::readStart(x)
+    output_rast <- terra::rast(x[[1]])
+    invisible(terra::writeStart(output_rast, filename = filename, ...))
+  } else {
+    n_blocks <- 1
+  }
+  for (b in 1:n_blocks) {
+    print(paste(b, "of", n_blocks))
+    # Extract (block) data values for object variables from x
+    if (class(x)[1] == "SpatRaster") {
+      y_target <- terra::readValues(x,
+                                    row = x_blocks$row[b],
+                                    nrows = x_blocks$nrows[b],
+                                    col = 1,
+                                    ncols = terra::ncol(x),
+                                    mat = TRUE)
+      output_data <- rep(NA, nrow(y_target))
+      y_target <- y_target[, object@variables, drop = FALSE]
+      y_idx <- which(as.logical(rowSums(!is.na(y_target))))
+      y_target <- y_target[y_idx,, drop = FALSE]
+    } else if (is.data.frame(x) || is.matrix(x)) {
+      y_target <- as.matrix(x[, object@variables, drop = FALSE])
+    }
 
-    doParallel::registerDoParallel(cores = parallel_cores)
-    d_j <- foreach(
-      g = 1:n_groups,
-      .combine = "c",
-      .errorhandling = c("stop"),
-      .noexport = c("object", "x", "y_coords")) %dopar% {
-        d_j_g <- rep(0, length(row_groups[[g]]))
-        for (i in 1:length(row_groups[[g]])) {
-          j <- row_groups[[g]][i]
+    # Run matching algorithm (from Climatch v2.0 User Manual)
+    # for source site i, target site j, climate values y for k variables
+    if (nrow(y_target) > 0) {
+
+      # Parallel
+      if (!is.null(parallel_cores) && parallel_cores > 1) {
+
+        # Split the target data rows into groups
+        n_groups <- min(nrow(y_target), parallel_cores*100)
+        row_groups <- split(1:nrow(y_target),
+                            cut(seq_along(1:nrow(y_target)),
+                                breaks = n_groups, labels = FALSE))
+
+        doParallel::registerDoParallel(cores = parallel_cores)
+        d_j <- foreach(
+          g = 1:n_groups,
+          .combine = "c",
+          .errorhandling = c("stop"),
+          .noexport = c("object", "x", "sd_data", "output_rast", "y_idx",
+                        "output_data")
+        ) %dopar% {
+          d_j_g <- rep(0, length(row_groups[[g]]))
+          for (i in 1:length(row_groups[[g]])) {
+            j <- row_groups[[g]][i]
+            if (algorithm == "euclidean") {
+
+              # d_j = floor{[1 - min_i(sqrt(1/k*sum_k((y_ik - y_jk)^2/
+              #                                         sd_k^2))]*10}
+              d_j_g[i] <- max(floor((1 - min(sqrt(
+                colMeans((t_y_source - y_target[j,])^2/sd_k^2)
+              )))*10 + 1e-6), 0) # compensate for flooring float inaccuracies
+
+            } else if (algorithm == "closest_standard_score") {
+
+              # d_j = 11 - min_i(max_k(cut(sqrt((y_ik - y_jk)^2/sd_k^2),
+              #                            {cut_values})))
+              d_j_g[i] <- 11 - min(matrixStats::colMaxs(
+                array(.bincode(abs(t_y_source - y_target[j,])/sd_k,
+                               cut_values), dim(t_y_source))))
+            }
+          }
+          d_j_g
+        }
+        doParallel::stopImplicitCluster()
+
+      } else { # serial
+
+        d_j <- rep(0, nrow(y_target))
+        for (j in 1:nrow(y_target)) {
           if (algorithm == "euclidean") {
 
-            # d_j = floor{[1 - min_i(sqrt(1/k*sum_k((y_ik - y_jk)^2/sd_k^2))]*10}
-            d_j_g[i] <- max(floor((1 - min(sqrt(
+            # d_j = floor{[1 - min_i(sqrt(1/k*sum_k((y_ik - y_jk)^2/
+            #                                         sd_k^2))]*10}
+            d_j[j] <- max(floor((1 - min(sqrt(
               colMeans((t_y_source - y_target[j,])^2/sd_k^2)
-            )))*10 + 1e-6), 0) # compensate for float inaccuracies when flooring
+            )))*10 + 1e-6), 0) # compensate for flooring float inaccuracies
 
           } else if (algorithm == "closest_standard_score") {
 
             # d_j = 11 - min_i(max_k(cut(sqrt((y_ik - y_jk)^2/sd_k^2),
             #                            {cut_values})))
-            d_j_g[i] <- 11 - min(matrixStats::colMaxs(
+            d_j[j] <- 11 - min(matrixStats::colMaxs(
               array(.bincode(abs(t_y_source - y_target[j,])/sd_k, cut_values),
                     dim(t_y_source))))
           }
         }
-        d_j_g
       }
-    doParallel::stopImplicitCluster()
 
-  } else { # serial
-
-    d_j <- rep(0, nrow(y_target))
-    for (j in 1:nrow(y_target)) {
-      if (algorithm == "euclidean") {
-
-        # d_j = floor{[1 - min_i(sqrt(1/k*sum_k((y_ik - y_jk)^2/sd_k^2))]*10}
-        d_j[j] <- max(floor((1 - min(sqrt(
-          colMeans((t_y_source - y_target[j,])^2/sd_k^2)
-        )))*10 + 1e-6), 0) # compensate for float inaccuracies when flooring
-
-      } else if (algorithm == "closest_standard_score") {
-
-        # d_j = 11 - min_i(max_k(cut(sqrt((y_ik - y_jk)^2/sd_k^2),
-        #                            {cut_values})))
-        d_j[j] <- 11 - min(matrixStats::colMaxs(
-          array(.bincode(abs(t_y_source - y_target[j,])/sd_k, cut_values),
-                dim(t_y_source))))
+      # As score 0-10 (as per Climatch site) or 0-1
+      if (!as_score) {
+        d_j <- d_j/10
       }
+
+      if (class(x)[1] == "SpatRaster") {
+        output_data[y_idx] <- d_j
+      }
+    }
+
+    # Write output block
+    if (class(x)[1] == "SpatRaster") {
+      terra::writeValues(output_rast, v = output_data,
+                         start = x_blocks$row[b], nrows = x_blocks$nrows[b])
     }
   }
 
-  # Return as score 0-10 (as per Climatch site) or 0-1
-  if (is.null(as_score)) {
-    as_score <- object@as_score
-  }
-  if (!as_score) {
-    d_j <- d_j/10
+  # Close block reading & writing
+  if (class(x)[1] == "SpatRaster") {
+    terra::readStop(x)
+    invisible(terra::writeStop(output_rast))
   }
 
   # Return a raw vector, raster or data frame
@@ -185,22 +235,12 @@ predict.Climatch <- function(object, x,
       raw_output <- FALSE
     }
   }
-  if (raw_output) {
+  if (raw_output && n_blocks == 1) {
     return(d_j)
-  } else if (class(x)[1] %in% c("Raster", "RasterStack", "RasterBrick")) {
-    output_rast <- raster::extend(
-      raster::rasterFromXYZ(cbind(y_coords, predicted = d_j),
-                            res = raster::res(x), crs = raster::crs(x)),
-      raster::extent(x))
-    if (filename != "") {
-      output_rast <- raster::writeRaster(output_rast, filename)
-    }
-    return(output_rast)
+  } else if (x_is_raster) {
+    return(raster::raster(output_rast))
   } else if (class(x)[1] == "SpatRaster") {
-    return(terra::extend(
-      terra::rast(cbind(y_coords, predicted = d_j),
-                  type = "xyz", crs = raster::crs(x)), terra::ext(x),
-      filename = filename))
+    return(output_rast)
   } else if (is.data.frame(x) || is.matrix(x)) {
     return(cbind(x[, which(!names(x) %in% object@variables)],
                  predicted = d_j))

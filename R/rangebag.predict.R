@@ -56,11 +56,12 @@ predict.Rangebag <- function(object, x,
 
   # Handle terra raster data in blocks
   if (class(x)[1] == "SpatRaster") {
-    x_blocks <- terra::blocks(x)
+    n_cores <- ifelse(is.numeric(parallel_cores), parallel_cores, 1)
+    x_blocks <- terra::blocks(x, n = 4*n_cores)
     n_blocks <- x_blocks$n
     terra::readStart(x)
     output_rast <- terra::rast(x[[1]])
-    terra::writeStart(output_rast, filename = filename, ...)
+    invisible(terra::writeStart(output_rast, filename = filename, ...))
   } else {
     n_blocks <- 1
   }
@@ -73,7 +74,7 @@ predict.Rangebag <- function(object, x,
       geometry::convhulln(model, options='Pp')})
   }
   for (b in 1:n_blocks) {
-
+    print(paste(b, "of", n_blocks))
     # Extract (block) data values for object variables from x
     if (class(x)[1] == "SpatRaster") {
       x_data <- terra::readValues(x,
@@ -95,21 +96,36 @@ predict.Rangebag <- function(object, x,
 
       # Parallel
       if (!is.null(parallel_cores) && parallel_cores > 1) {
+
+        # Split the target data rows into groups
+        n_groups <- min(nrow(x_data), parallel_cores*100)
+        row_groups <- split(1:nrow(x_data),
+                            cut(seq_along(1:nrow(x_data)),
+                                breaks = n_groups, labels = FALSE))
+
         doParallel::registerDoParallel(cores = parallel_cores)
         ch_counts <- foreach(
-          i = 1:n_models,
-          .combine = "+",
+          g = 1:n_groups,
+          .combine = "c",
           .errorhandling = c("stop"),
-          .export = c("x_data", "object", "hulls"),
-          .noexport = c("x")) %dopar% {
+          .export = c("x_data", "object", "hulls", "row_groups"),
+          .noexport = c("x", "output_rast", "output_data", "x_idx")
+        ) %dopar% {
+          ch_counts_g <- numeric(length(row_groups[[g]]))
+          idx <- row_groups[[g]]
+          for (i in 1:n_models) {
             vars <- colnames(object@ch_models[[i]])
             if (n_dim == 1) {
-              (x_data[, vars] >= object@ch_models[[i]][1, 1] &
-                 x_data[, vars] <= object@ch_models[[i]][2, 1])/n_models
+              data_in_ch <- (x_data[idx, vars] >= object@ch_models[[i]][1, 1] &
+                               x_data[idx, vars] <= object@ch_models[[i]][2, 1])
             } else {
-              geometry::inhulln(hulls[[i]], x_data[, vars])/n_models
+              data_in_ch <- geometry::inhulln(hulls[[i]],
+                                              x_data[idx, vars, drop = FALSE])
             }
+            ch_counts_g <- ch_counts_g + data_in_ch/n_models
           }
+          ch_counts_g
+        }
         doParallel::stopImplicitCluster()
 
       } else { # serial
@@ -120,7 +136,8 @@ predict.Rangebag <- function(object, x,
             data_in_ch <- (x_data[, vars] >= object@ch_models[[i]][1, 1] &
                              x_data[, vars] <= object@ch_models[[i]][2, 1])
           } else {
-            data_in_ch <- geometry::inhulln(hulls[[i]], x_data[, vars])
+            data_in_ch <- geometry::inhulln(hulls[[i]],
+                                            x_data[, vars, drop = FALSE])
           }
           ch_counts <- ch_counts + data_in_ch/n_models
         }
@@ -141,7 +158,7 @@ predict.Rangebag <- function(object, x,
   # Close block reading & writing
   if (class(x)[1] == "SpatRaster") {
     terra::readStop(x)
-    terra::writeStop(output_rast)
+    invisible(terra::writeStop(output_rast))
   }
 
   # Return the count fraction as a raw vector, raster or data frame
