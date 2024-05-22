@@ -119,7 +119,7 @@ predict.Climatch <- function(object, x,
     n_blocks <- 1
   }
   for (b in 1:n_blocks) {
-    print(paste(b, "of", n_blocks))
+
     # Extract (block) data values for object variables from x
     if (class(x)[1] == "SpatRaster") {
       y_target <- terra::readValues(x,

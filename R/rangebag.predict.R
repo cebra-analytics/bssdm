@@ -74,7 +74,7 @@ predict.Rangebag <- function(object, x,
       geometry::convhulln(model, options='Pp')})
   }
   for (b in 1:n_blocks) {
-    print(paste(b, "of", n_blocks))
+
     # Extract (block) data values for object variables from x
     if (class(x)[1] == "SpatRaster") {
       x_data <- terra::readValues(x,
