@@ -150,7 +150,7 @@ rangebag.data.frame <- function(x, p,
   }
 
   # Convert to a terra::SpatRaster
-  ordered_idx <- c(which(c("lon", "lat") %in% names(x)),
+  ordered_idx <- c(match(c("lon", "lat"), names(x)),
                    which(!names(x) %in% c("lon", "lat")))
   x <- terra::rast(x[, ordered_idx], crs = "EPSG:4326")
 
