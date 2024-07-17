@@ -39,6 +39,18 @@ rangebag <- function(x, p,
                      n_dim = 2,
                      sample_prop = 0.5,
                      limit_occur = TRUE, ...) {
+  if (n_dim <= 0) {
+    stop("n_dim must be greater than 0.", call. = FALSE)
+  }
+  if (n_models <= 0) {
+    stop("n_models must be greater than 0.", call. = FALSE)
+  }
+  if (sample_prop <= 0 || sample_prop > 1) {
+    stop(
+      "sample_prop must be greater than 0 and less than or equal to 1.", 
+      call. = FALSE
+    )
+  }
   UseMethod("rangebag")
 }
 

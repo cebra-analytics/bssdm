@@ -43,6 +43,9 @@ climatch <- function(x, p,
                      d_max = 50, # km
                      sd_data = NULL,
                      as_score = TRUE, ...) {
+  if (d_max <= 0) {
+    stop("d_max must be greater than 0.", call. = FALSE)
+  }
   UseMethod("climatch")
 }
 
