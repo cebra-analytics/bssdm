@@ -10,8 +10,8 @@
 #'   with WGS84 \emph{lon} and \emph{lat} columns.
 #' @param algorithm Climatch method algorithm selected from "euclidean"
 #'   (default) or "closest_standard_score".
-#' @param d_max Maximum range distance (default = 50 km) used when matching
-#'   occurrence points to nearest climate data points/cells.
+#' @param d_max Maximum range distance, in kilometres, used when matching
+#'   occurrence points to nearest climate data points/cells (default = 50).
 #' @param sd_data Optional \code{data.frame} for calculating the standard
 #'   deviation for climate variable, or a \code{vector} of pre-calculated
 #'   values.
@@ -43,6 +43,9 @@ climatch <- function(x, p,
                      d_max = 50, # km
                      sd_data = NULL,
                      as_score = TRUE, ...) {
+  if (d_max <= 0) {
+    stop("d_max must be greater than 0.", call. = FALSE)
+  }
   UseMethod("climatch")
 }
 
