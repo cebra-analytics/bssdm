@@ -102,6 +102,14 @@ rangebag.SpatRaster <- function(x, p,
 
   # Select data from cells in x corresponding to each occurrence point in p
   fit_idx <- terra::cellFromXY(x, p[, c("lon", "lat")])
+  if(any(is.na(fit_idx))) { # Remove any points outside the extent of the data
+    n_outside <- length(which(is.na(fit_idx)))
+    warning(sprintf(
+      "%i points %s outside the extent of the environmental data and will be ignored",
+      n_outside, if(n_outside > 0) "are" else "is"
+    ), call. = FALSE)
+    fit_idx <- fit_idx[!is.na(fit_idx)]
+  }
   if (limit_occur) { # limit to one occurrence per cell
     fit_idx <- unique(fit_idx)
   }
