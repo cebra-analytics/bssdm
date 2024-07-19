@@ -7,7 +7,8 @@
 #'   \code{raster::Raster*} (with any CRS), or a \code{data.frame} with
 #'   WGS84 \emph{lon} and \emph{lat} columns.
 #' @param p Species occurrence data as a \code{data.frame} (or \code{matrix})
-#'   with WGS84 \emph{lon} and \emph{lat} columns.
+#'   with WGS84 \emph{lon} and \emph{lat} columns. Any points outside the extent
+#'   of \code{x} will be ignored.
 #' @param n_models Number of convex hull models to build in sampled environment
 #'   space (default = 100).
 #' @param n_dim Number of dimensions (variables) of sampled convex hull models
