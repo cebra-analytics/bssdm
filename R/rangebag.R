@@ -106,8 +106,8 @@ rangebag.SpatRaster <- function(x, p,
   if(any(is.na(fit_idx))) { # Remove any points outside the extent of the data
     n_outside <- length(which(is.na(fit_idx)))
     warning(sprintf(
-      "%i points %s outside the extent of the environmental data and will be ignored",
-      n_outside, if(n_outside > 0) "are" else "is"
+      "%i point%s outside the extent of the environmental data and will be ignored",
+      n_outside, if(n_outside > 1) "s are" else " is"
     ), call. = FALSE)
     fit_idx <- fit_idx[!is.na(fit_idx)]
   }
