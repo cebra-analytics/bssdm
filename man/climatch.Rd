@@ -69,8 +69,8 @@ with WGS84 \emph{lon} and \emph{lat} columns.}
 \item{algorithm}{Climatch method algorithm selected from "euclidean"
 (default) or "closest_standard_score".}
 
-\item{d_max}{Maximum range distance (default = 50 km) used when matching
-occurrence points to nearest climate data points/cells.}
+\item{d_max}{Maximum range distance, in kilometres, used when matching
+occurrence points to nearest climate data points/cells (default = 50).}
 
 \item{sd_data}{Optional \code{data.frame} for calculating the standard
 deviation for climate variable, or a \code{vector} of pre-calculated

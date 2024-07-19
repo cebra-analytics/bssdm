@@ -53,7 +53,8 @@ rangebag(
 WGS84 \emph{lon} and \emph{lat} columns.}
 
 \item{p}{Species occurrence data as a \code{data.frame} (or \code{matrix})
-with WGS84 \emph{lon} and \emph{lat} columns.}
+with WGS84 \emph{lon} and \emph{lat} columns. Any points outside the extent
+of \code{x} will be ignored.}
 
 \item{n_models}{Number of convex hull models to build in sampled environment
 space (default = 100).}
