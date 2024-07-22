@@ -122,7 +122,7 @@ predict.Rangebag <- function(object, x,
               data_in_ch <- geometry::inhulln(hulls[[i]],
                                               x_data[idx, vars, drop = FALSE])
             }
-            ch_counts_g <- ch_counts_g + data_in_ch/n_models
+            ch_counts_g <- ch_counts_g + data_in_ch
           }
           ch_counts_g
         }
@@ -139,12 +139,12 @@ predict.Rangebag <- function(object, x,
             data_in_ch <- geometry::inhulln(hulls[[i]],
                                             x_data[, vars, drop = FALSE])
           }
-          ch_counts <- ch_counts + data_in_ch/n_models
+          ch_counts <- ch_counts + data_in_ch
         }
       }
 
       if (class(x)[1] == "SpatRaster") {
-        output_data[x_idx] <- ch_counts
+        output_data[x_idx] <- ch_counts/n_models
       }
     }
 
@@ -170,13 +170,13 @@ predict.Rangebag <- function(object, x,
     }
   }
   if (raw_output && n_blocks == 1) {
-    return(ch_counts)
+    return(ch_counts/n_models)
   } else if (x_is_raster) {
     return(raster::raster(output_rast))
   } else if (class(x)[1] == "SpatRaster") {
     return(output_rast)
   } else if (is.data.frame(x) || is.matrix(x)) {
     return(cbind(x[, which(!names(x) %in% object@variables)],
-                 predicted = ch_counts))
+                 predicted = ch_counts/n_models))
   }
 }
