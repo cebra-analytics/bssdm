@@ -13,6 +13,7 @@
   raw_output = NULL,
   filename = "",
   parallel_cores = NULL,
+  debug = FALSE,
   ...
 )
 }
@@ -57,6 +58,9 @@ Default is "".}
 
 \item{parallel_cores}{Optional number of cores available for parallel
 processing, thus enable parallel processing. Default is NULL (serial).}
+
+\item{debug}{Output additional debug information (memory block info, etc.).
+Default is FALSE.}
 
 \item{...}{Additional parameters.}
 }

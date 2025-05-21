@@ -36,6 +36,8 @@
 #'   Default is "".
 #' @param parallel_cores Optional number of cores available for parallel
 #'   processing, thus enable parallel processing. Default is NULL (serial).
+#' @param debug Output additional debug information (memory block info, etc.).
+#'   Default is FALSE.
 #' @param ... Additional parameters.
 #' @return Predicted values as a raw vector or a \code{terra::SpatRaster},
 #'   \code{raster::Raster*}, \code{data.frame}, or \code{matrix} (as per
@@ -51,7 +53,8 @@ predict.Climatch <- function(object, x,
                              as_score = NULL,
                              raw_output = NULL,
                              filename = "",
-                             parallel_cores = NULL, ...) {
+                             parallel_cores = NULL,
+                             debug = FALSE, ...) {
 
   # Transpose presence data (for performance)
   t_y_source <- t(as.matrix(object@presence))
@@ -110,13 +113,16 @@ predict.Climatch <- function(object, x,
   # Handle terra raster data in blocks
   if (class(x)[1] == "SpatRaster") {
     n_cores <- ifelse(is.numeric(parallel_cores), parallel_cores, 1)
-    x_blocks <- terra::blocks(x, n = 4*n_cores)
+    x_blocks <- terra::blocks(x, n = 8*n_cores)
     n_blocks <- x_blocks$n
     terra::readStart(x)
     output_rast <- terra::rast(x[[1]])
     invisible(terra::writeStart(output_rast, filename = filename, ...))
   } else {
     n_blocks <- 1
+  }
+  if (debug) {
+    message(paste("Climatch predict writing output in", n_blocks, "blocks\n"))
   }
   for (b in 1:n_blocks) {
 
