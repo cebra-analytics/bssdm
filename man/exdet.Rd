@@ -91,12 +91,28 @@ library(tmap)
 bio <- worldclim_global("bio", res = 10, path = tempdir())
 aus <- gadm("AUS", level = 0, resolution = 2, path = tempdir())
 occ <- spatSample(aus, size = 100, method = "random")
-ref <- terra::extract(bio, occ)
+ref <- terra::extract(bio, occ, ID = FALSE)
 ex <- exdet(bio, ref, mic = TRUE)
 
 # Plot outputs
 tmap::tm_shape(ex$exdet) +
-  tmap::tm_raster(col.scale = tmap::tm_scale_continuous(n = 10))
+  tmap::tm_raster(
+    col.scale = tmap::tm_scale_continuous(values = "matplotlib.rd_bu", midpoint = 0),
+    col.legend = tmap::tm_legend(
+      position = tmap::tm_pos_out("right", "center"),
+      title = "ExDet"
+    )
+  ) +
+  tmap::tm_credits(
+    paste(
+      "Positive values indicate covariate correlations.",
+      "Negative values indicate novel univariate ranges.",
+      "Values around zero indicate analog conditions.",
+      sep = "\n"
+    ),
+    position = tmap::tm_pos_out("center", "bottom")
+  ) +
+  tmap::tm_title("Extrapolation Detection")
 
 tmap::tm_shape(ex$mic1) +
   tmap::tm_raster(
@@ -108,7 +124,6 @@ tmap::tm_shape(ex$mic1) +
     col.chart = tmap::tm_chart_donut()
   ) +
   tmap::tm_title("Type 1 novelty: Most influential covariate")
-
 
 tmap::tm_shape(ex$mic2) +
   tmap::tm_raster(

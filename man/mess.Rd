@@ -73,7 +73,7 @@ library(tmap)
 bio <- worldclim_global("bio", res = 10, path = tempdir())
 aus <- gadm("AUS", level = 0, resolution = 2, path = tempdir())
 occ <- spatSample(aus, size = 100, method = "random")
-ref <- terra::extract(bio, occ)
+ref <- terra::extract(bio, occ, ID = FALSE)
 m <- mess(bio, ref, full = TRUE)
 
 # Plot outputs
