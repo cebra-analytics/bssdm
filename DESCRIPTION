@@ -1,6 +1,6 @@
 Package: bssdm
 Title: Biosecurity Species Distribution Modelling
-Version: 0.1.10
+Version: 0.2.0
 Authors@R: c(
     person("Sean", "Haythorne", email = "sean.haythorne@unimelb.edu.au", role = c("aut", "cre")),
     person("James", "Camac", email = "james.camac@unimelb.edu.au", role = c("aut")),
@@ -26,11 +26,15 @@ Suggests:
     dismo,
     knitr,
     rmarkdown,
-    testthat
+    testthat,
+    geodata,
+    tmap
 Collate: 
     'Climatch-class.R'
     'Rangebag-class.R'
     'climatch.R'
     'climatch.predict.R'
+    'exdet.R'
+    'mess.R'
     'rangebag.R'
     'rangebag.predict.R'
