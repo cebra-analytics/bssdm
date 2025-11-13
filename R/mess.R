@@ -134,9 +134,7 @@ mess.SpatRaster <- function(x, ref, full = FALSE, filename = "", ...) {
   if (isTRUE(full)) {
     invisible(terra::writeStart(out_sim, filename = "", ...))
   }
-  invisible(terra::writeStart(out_min, 
-                              filename = if (filename != "") filename else "", 
-                              ...))
+  invisible(terra::writeStart(out_min, filename = filename, ...))
   invisible(terra::writeStart(out_mod, filename = "", ...))
   invisible(terra::writeStart(out_mos, filename = "", ...))
   
