@@ -129,7 +129,7 @@ mess.SpatRaster <- function(x, ref, full = FALSE, filename = "", ...) {
   terra::varnames(out_mos) <- "mos"
 
   # Handle raster data in blocks
-  x_blocks <- terra::blocks(x, n = 8)
+  x_blocks <- terra::blocks(x, ...)
   n_blocks <- x_blocks$n
   terra::readStart(x)
   
