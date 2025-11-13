@@ -121,22 +121,22 @@ mess.SpatRaster <- function(x, ref, full = FALSE, filename = "", ...) {
     out_sim <- terra::init(x, NA)
     names(out_sim) <- cols
   }
-  out_min <- terra::init(x[[1]], NA)
-  names(out_min) <- "mess"
+  out_min <- setNames(terra::init(x[[1]], NA), "mess")
+  terra::varnames(out_min) <- "mess"
   out_mod <- terra::init(x[[1]], NA)
+  terra::varnames(out_mod) <- "mod"
   out_mos <- terra::init(x[[1]], NA)
-  
+  terra::varnames(out_mos) <- "mos"
+
   # Handle raster data in blocks
-  x_blocks <- terra::blocks(x, n = 8)
+  x_blocks <- terra::blocks(x, ...)
   n_blocks <- x_blocks$n
   terra::readStart(x)
   
   if (isTRUE(full)) {
     invisible(terra::writeStart(out_sim, filename = "", ...))
   }
-  invisible(terra::writeStart(out_min, 
-                              filename = if (filename != "") filename else "", 
-                              ...))
+  invisible(terra::writeStart(out_min, filename = filename, ...))
   invisible(terra::writeStart(out_mod, filename = "", ...))
   invisible(terra::writeStart(out_mos, filename = "", ...))
   
