@@ -29,11 +29,9 @@ Imports:
     raster (>= 3.5.2),
     terra (>= 1.6.47)
 Suggests:
-    blockCV,
     dismo,
     knitr,
     rmarkdown,
-    sf,
     testthat,
     geodata,
     tmap
@@ -44,7 +42,6 @@ Collate:
     'bssdm-package.R'
     'climatch.R'
     'climatch.predict.R'
-    'cv_helpers.R'
     'exdet.R'
     'mess.R'
     'rangebag.R'
