@@ -1,6 +1,6 @@
 Package: bssdm
 Title: Biosecurity Species Distribution Modelling
-Version: 0.3.0.9000
+Version: 0.2.1.9000
 Authors@R: c(
     person("Sean", "Haythorne", email = "sean.haythorne@unimelb.edu.au", role = c("aut", "cre")),
     person("James", "Camac", email = "james.camac@unimelb.edu.au", role = c("aut")),
@@ -29,9 +29,11 @@ Imports:
     raster (>= 3.5.2),
     terra (>= 1.6.47)
 Suggests:
+    blockCV,
     dismo,
     knitr,
     rmarkdown,
+    sf,
     testthat,
     geodata,
     tmap
@@ -42,6 +44,7 @@ Collate:
     'bssdm-package.R'
     'climatch.R'
     'climatch.predict.R'
+    'cv_helpers.R'
     'exdet.R'
     'mess.R'
     'rangebag.R'
