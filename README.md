@@ -6,7 +6,7 @@
 <!-- badges: start -->
 
 [![Last
-commit](https://img.shields.io/github/last-commit/GlobalEcologyLab/poems.svg)](https://github.com/cebra-analytics/bssdm/commits/main)
+commit](https://img.shields.io/github/last-commit/cebra-analytics/bssdm.svg)](https://github.com/cebra-analytics/bssdm/commits/main)
 <!-- badges: end -->
 
 The *bssdm* package provides Species Distribution Modelling (SDM)
@@ -15,8 +15,8 @@ distribution environmental suitability for exotic pests, diseases, and
 other biosecurity threats, utilising spatial species occurrence records
 and their corresponding environmental variables. The two methods are:
 
-1.  Range bagging (Drake, 2015).
-2.  Climatch (ABARES, 2020).
+1.  *Range bagging* (Drake, 2015)
+2.  *Climatch* (ABARES, 2020)
 
 ## Installation
 
@@ -72,7 +72,7 @@ climate_rast
 
 The SDM requires species occurrence records to be specified in a table
 with latitude and longitude coordinates using the WGS84 coordinate
-reference system. Here we will use global Hawkweed (*Hieracium
+reference system (CRS). Here we will use global Hawkweed (*Hieracium
 pilosella*) occurrences downloaded from Global Biodiversity Information
 Facility (GBIF, 2026).
 
@@ -106,11 +106,11 @@ terra::plot(terra::vect(occurrences_cleaned, crs = "EPSG:4326"),
 
 To run a SDM we first build a model, then use it to predict the
 suitability for the area of interest using climate data with matching
-variables. Although this climate data may differ in its extent,
-coordinate reference system (CRS), resolution, or time frame (e.g. past
-or future climate), here we reuse the climate data used to build the
-model. We will build models and predict suitability for both our *Range
-bagging* and *Climatch* SDM methods.
+variables. Although this climate data may differ in its extent, CRS,
+resolution, or time frame (e.g. past or future climate), here we reuse
+the climate data used to build the model. We will build models and
+predict suitability for both our *Range bagging* and *Climatch* SDM
+methods.
 
 ``` r
 # Run Range bagging SDM

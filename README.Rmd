@@ -16,13 +16,13 @@ knitr::opts_chunk$set(
 # bssdm: Biosecurity Species Distribution Modelling
 
 <!-- badges: start -->
-[![Last commit](https://img.shields.io/github/last-commit/GlobalEcologyLab/poems.svg)](https://github.com/cebra-analytics/bssdm/commits/main)
+[![Last commit](https://img.shields.io/github/last-commit/cebra-analytics/bssdm.svg)](https://github.com/cebra-analytics/bssdm/commits/main)
 <!-- badges: end -->
 
 The *bssdm* package provides Species Distribution Modelling (SDM) implementations for two presence-only methods for predicting the spatial distribution environmental suitability for exotic pests, diseases, and other biosecurity threats, utilising spatial species occurrence records and their corresponding environmental variables. The two methods are:
 
-1. Range bagging (Drake, 2015).
-1. Climatch (ABARES, 2020).
+1. *Range bagging* (Drake, 2015)
+1. *Climatch* (ABARES, 2020)
 
 ## Installation
 
@@ -40,7 +40,7 @@ The following example generates the environmental suitability for a Hawkweed spe
 
 The SDM requires spatial environmental data in the form of *GeoTIFF* raster layers for the area of interest, encapsulating the species occurrence records (to build the model), as well as locations where the predicted environmental suitability is desired. Here we will use a selection of global climate data from *WorldClim* (Fick & Hijmans, 2017; <http://www.worldclim.org>).
 
-```{r, message = FALSE, fig.align = "center", fig.width = 4, fig.height = 4}
+```{r, message = FALSE, fig.align = "center"}
 # Climate WorldClim (BIOCLIM) data
 # BIO02: Mean Diurnal Range
 # BIO05; Max Temperature of Warmest Month
@@ -55,7 +55,7 @@ climate_rast
 
 ### Step 2: Obtain species occurrence records
 
-The SDM requires species occurrence records to be specified in a table with latitude and longitude coordinates using the WGS84 coordinate reference system. Here we will use global Hawkweed (*Hieracium pilosella*) occurrences downloaded from Global Biodiversity Information Facility (GBIF, 2026).
+The SDM requires species occurrence records to be specified in a table with latitude and longitude coordinates using the WGS84 coordinate reference system (CRS). Here we will use global Hawkweed (*Hieracium pilosella*) occurrences downloaded from Global Biodiversity Information Facility (GBIF, 2026).
 
 It is recommended to firstly 'clean' occurrence records to remove duplicates and incomplete or incorrect records via a tool such as *CoordinateCleaner* (Zizka et al., 2019). We will use occurrence records that were cleaned via *CoordinateCleaner*.
 
@@ -73,7 +73,7 @@ terra::plot(terra::vect(occurrences_cleaned, crs = "EPSG:4326"),
 
 ### Step 3: Run the SDM
 
-To run a SDM we first build a model, then use it to predict the suitability for the area of interest using climate data with matching variables. Although this climate data may differ in its extent, coordinate reference system (CRS), resolution, or time frame (e.g. past or future climate), here we reuse the climate data used to build the model. We will build models and predict suitability for both our *Range bagging* and *Climatch* SDM methods.
+To run a SDM we first build a model, then use it to predict the suitability for the area of interest using climate data with matching variables. Although this climate data may differ in its extent, CRS, resolution, or time frame (e.g. past or future climate), here we reuse the climate data used to build the model. We will build models and predict suitability for both our *Range bagging* and *Climatch* SDM methods.
 
 ```{r, message = FALSE, fig.align = "center"}
 # Run Range bagging SDM
