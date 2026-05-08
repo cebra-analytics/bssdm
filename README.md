@@ -112,14 +112,13 @@ the climate data used to build the model. We will build models and
 predict suitability for both our *Range bagging* and *Climatch* SDM
 methods.
 
+#### Range bagging SDM
+
 ``` r
 # Run Range bagging SDM
 rangebag_model <- bssdm::rangebag(climate_rast, occurrences_cleaned)
 rangebag_output <- predict(rangebag_model, climate_rast, raw_output = FALSE)
-# Run Climatch SDM
-climatch_model <- bssdm::climatch(climate_rast, occurrences_cleaned)
-climatch_output <- predict(climatch_model, climate_rast, raw_output = FALSE)
-# Plot the SDM predicted climate suitability for each model
+# Plot the Range bagging SDM predicted climate suitability
 terra::plot(rangebag_output, colNA = "grey",
             main = "Range bagging SDM predicted climate suitability",
             xlab = "Longitude (degrees)", ylab = "Latitude (degrees)")
@@ -127,13 +126,19 @@ terra::plot(rangebag_output, colNA = "grey",
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" style="display: block; margin: auto;" />
 
+#### Climatch SDM
+
 ``` r
+# Run Climatch SDM
+climatch_model <- bssdm::climatch(climate_rast, occurrences_cleaned)
+climatch_output <- predict(climatch_model, climate_rast, raw_output = FALSE)
+# Plot the Climatch SDM predicted climate suitability
 terra::plot(climatch_output, colNA = "grey",
             main = "Climatch SDM predicted climate suitability",
             xlab = "Longitude (degrees)", ylab = "Latitude (degrees)")
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-2.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" style="display: block; margin: auto;" />
 
 ## References
 
