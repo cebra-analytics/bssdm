@@ -211,19 +211,21 @@ mess.SpatRaster <- function(x, ref, full = FALSE, filename = "", ...) {
   
   # Return results
   if (isTRUE(full)) {
-    return(list(
+    result <- list(
       mess = out_min,
       mess_by_variable = out_sim,
       mod = out_mod,
       mos = out_mos
-    ))
+    )
   } else {
-    return(list(
+    result <- list(
       mess = out_min,
       mod = out_mod,
       mos = out_mos
-    ))
+    )
   }
+  class(result) <- "MessResult"
+  return(result)
 }
 
 #' @name mess

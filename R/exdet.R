@@ -272,16 +272,18 @@ exdet.SpatRaster <- function(
 
   # Return results
   if (isTRUE(mic)) {
-    return(list(
+    result <- list(
       exdet = out_exdet,
       mic1 = out_mic1,
       mic2 = out_mic2
-    ))
+    )
   } else {
-    return(list(
+    result <- list(
       exdet = out_exdet
-    ))
+    )
   }
+  class(result) <- "ExdetResult"
+  return(result)
 }
 
 #' @name exdet
