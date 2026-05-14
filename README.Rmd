@@ -4,7 +4,7 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, include = FALSE}
+```{r global_config, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -34,7 +34,7 @@ The package also provides two tools for assessing environmental novelty in the p
 
 You can install the latest version of *bssdm* from [GitHub](https://github.com/) with:
 
-``` r
+```r
 remotes::install_github("cebra-analytics/bssdm")
 ```
 
@@ -46,7 +46,7 @@ The following example generates the environmental suitability for a Hawkweed spe
 
 The SDM requires spatial environmental data in the form of *GeoTIFF* raster layers for the area of interest, encapsulating the species occurrence records (to build the model), as well as locations where the predicted environmental suitability is desired. Here we will use a selection of global climate data from *WorldClim* (Fick & Hijmans, 2017; <http://www.worldclim.org>).
 
-```{r, message = FALSE, fig.align = "center"}
+```{r climate_rast, message = FALSE, fig.align = "center"}
 # Climate WorldClim (BIOCLIM) data
 # BIO02: Mean Diurnal Range
 # BIO05; Max Temperature of Warmest Month
@@ -65,7 +65,7 @@ The SDM requires species occurrence records to be specified in a table with lati
 
 It is recommended to firstly 'clean' occurrence records to remove duplicates and incomplete or incorrect records via a tool such as *CoordinateCleaner* (Zizka et al., 2019). We will use occurrence records that were cleaned via *CoordinateCleaner*.
 
-```{r, message = FALSE, fig.align = "center", fig.dim = c(12, 7)}
+```{r occurrences, message = FALSE, fig.align = "center", fig.dim = c(12, 7), fig.cap = "BIOCLIM Mean Diurnal Range & Hawkweed occurrences (red)"}
 # Load cleaned Hawkweed (Hieracium pilosella) occurrences
 occurrences_cleaned <- read.csv("data/hawkweed_occurrences_cleaned.csv")
 head(occurrences_cleaned)
@@ -83,7 +83,7 @@ To run a SDM we first build a model, then use it to predict the suitability for 
 
 #### Range bagging SDM
 
-```{r, message = FALSE, fig.align = "center", fig.dim = c(12, 7)}
+```{r rangebag_model, message = FALSE, fig.align = "center", fig.dim = c(12, 7), fig.cap = "Range bagging SDM predicted climate suitability"}
 # Run Range bagging SDM
 rangebag_model <- bssdm::rangebag(climate_rast, occurrences_cleaned)
 rangebag_output <- predict(rangebag_model, climate_rast, raw_output = FALSE)
@@ -95,7 +95,7 @@ terra::plot(rangebag_output, colNA = "grey",
 
 #### Climatch SDM
 
-```{r, message = FALSE, fig.align = "center", fig.dim = c(12, 7)}
+```{r climatch_model, message = FALSE, fig.align = "center", fig.dim = c(12, 7), fig.cap = "Climatch SDM predicted climate suitability"}
 # Run Climatch SDM
 climatch_model <- bssdm::climatch(climate_rast, occurrences_cleaned)
 climatch_output <- predict(climatch_model, climate_rast, raw_output = FALSE)
@@ -113,7 +113,7 @@ Model extrapolation can reduce prediction reliability, so it is important to und
 
 Both functions require a reference dataset: the climate values extracted at the species occurrence locations used to build the model.
 
-```{r, message = FALSE}
+```{r ref_data, message = FALSE}
 # Extract climate values at occurrence locations (reference data for novelty assessment)
 ref_data <- terra::extract(climate_rast,
                            terra::vect(occurrences_cleaned, crs = "EPSG:4326"),
@@ -124,16 +124,16 @@ ref_data <- terra::extract(climate_rast,
 
 The Multivariate Environmental Similarity Surface (MESS; Elith et al., 2010) quantifies how similar each location's environmental conditions are to the reference (occurrence) data. Positive values indicate conditions within the reference range; negative values indicate novel (dissimilar) conditions. The `mess()` function also returns the most dissimilar variable (MoD) and most similar variable (MoS) for each location.
 
-```{r, message = FALSE}
+```{r calculate_mess, message = FALSE}
 # Calculate MESS
 mess_output <- bssdm::mess(climate_rast, ref_data, full = TRUE)
 ```
 
-```{r, message = FALSE, fig.align = "center", fig.dim = c(10, 6)}
+```{r plot_mess, message = FALSE, fig.align = "center", fig.dim = c(10, 6), fig.cap = "MESS output"}
 plot(mess_output)
 ```
 
-```{r, message = FALSE, fig.align = "center", fig.dim = c(12, 6)}
+```{r plot_mess_mod, message = FALSE, fig.align = "center", fig.dim = c(12, 6), fig.cap = "Most dissimilar covariate (MoD)"}
 plot(mess_output, which = "mod")
 ```
 
@@ -141,20 +141,20 @@ plot(mess_output, which = "mod")
 
 The Extrapolation Detection tool (ExDet; Mesgaran et al., 2014) distinguishes between two types of environmental novelty. Type 1 (univariate) novelty occurs when one or more variables fall outside their reference range; Type 2 (multivariate) novelty occurs when the combination of variables is unusual even if individual variables are within range. The `exdet()` function returns a score where values less than 0 indicate Type 1 novelty, values between 0 and 1 indicate analog conditions, and values greater than 1 indicate Type 2 novelty.
 
-```{r, message = FALSE}
+```{r calculate_exdet, message = FALSE}
 # Calculate ExDet with most influential covariates
 exdet_output <- bssdm::exdet(climate_rast, ref_data, mic = TRUE)
 ```
 
-```{r, message = FALSE, fig.align = "center", fig.dim = c(10, 6)}
+```{r plot_exdet, message = FALSE, fig.align = "center", fig.dim = c(10, 6), fig.cap = "ExDet output"}
 plot(exdet_output)
 ```
 
-```{r, message = FALSE, fig.align = "center", fig.dim = c(12, 6)}
+```{r plot_exdet_mic1, message = FALSE, fig.align = "center", fig.dim = c(12, 6), fig.cap = "Most influential covariate for Type 1 novelty"}
 plot(exdet_output, which = "mic1")
 ```
 
-```{r, message = FALSE, fig.align = "center", fig.dim = c(12, 6)}
+```{r plot_exdet_mic2, message = FALSE, fig.align = "center", fig.dim = c(12, 6), fig.cap = "Most influential covariate for Type 2 novelty"}
 plot(exdet_output, which = "mic2")
 ```
 
