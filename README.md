@@ -1,27 +1,30 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+
 
 # bssdm: Biosecurity Species Distribution Modelling
 
 <!-- badges: start -->
-
-[![Last
-commit](https://img.shields.io/github/last-commit/cebra-analytics/bssdm.svg)](https://github.com/cebra-analytics/bssdm/commits/main)
+[![Last commit](https://img.shields.io/github/last-commit/cebra-analytics/bssdm.svg)](https://github.com/cebra-analytics/bssdm/commits/main)
 <!-- badges: end -->
 
-The *bssdm* package provides Species Distribution Modelling (SDM)
-implementations for two presence-only methods for predicting the spatial
-distribution environmental suitability for exotic pests, diseases, and
-other biosecurity threats, utilising spatial species occurrence records
-and their corresponding environmental variables. The two methods are:
+The *bssdm* package provides Species Distribution Modelling (SDM) implementations for two presence-only methods for predicting the spatial distribution environmental suitability for exotic pests, diseases, and other biosecurity threats, utilising spatial species occurrence records and their corresponding environmental variables. The two SDM methods are:
 
-1.  *Range bagging* (Drake, 2015)
-2.  *Climatch* (ABARES, 2020)
+1. *Range bagging* (Drake, 2015)
+1. *Climatch* (ABARES, 2020)
+
+The package also provides two tools for assessing environmental novelty in the projection area relative to the species occurrence locations used to build a model:
+
+1. *MESS* — Multivariate Environmental Similarity Surface (Elith et al., 2010)
+1. *ExDet* — Extrapolation Detection (Mesgaran et al., 2014)
 
 ## Installation
 
-You can install the latest version of *bssdm* from
-[GitHub](https://github.com/) with:
+You can install the latest version of *bssdm* from [GitHub](https://github.com/) with:
 
 ``` r
 remotes::install_github("cebra-analytics/bssdm")
@@ -29,19 +32,12 @@ remotes::install_github("cebra-analytics/bssdm")
 
 ## Example
 
-The following example generates the environmental suitability for a
-Hawkweed species (*Hieracium pilosella*), an exotic weed for Australia,
-using both the *bssdm* package *Range bagging* and *Climatch* method
-implementations.
+The following example generates the environmental suitability for a Hawkweed species (*Hieracium pilosella*), an exotic weed for Australia, using both the *bssdm* package *Range bagging* and *Climatch* method implementations.
 
 ### Step 1: Obtain environmental variables
 
-The SDM requires spatial environmental data in the form of *GeoTIFF*
-raster layers for the area of interest, encapsulating the species
-occurrence records (to build the model), as well as locations where the
-predicted environmental suitability is desired. Here we will use a
-selection of global climate data from *WorldClim* (Fick & Hijmans, 2017;
-<http://www.worldclim.org>).
+The SDM requires spatial environmental data in the form of *GeoTIFF* raster layers for the area of interest, encapsulating the species occurrence records (to build the model), as well as locations where the predicted environmental suitability is desired. Here we will use a selection of global climate data from *WorldClim* (Fick & Hijmans, 2017; <http://www.worldclim.org>).
+
 
 ``` r
 # Climate WorldClim (BIOCLIM) data
@@ -70,16 +66,10 @@ climate_rast
 
 ### Step 2: Obtain species occurrence records
 
-The SDM requires species occurrence records to be specified in a table
-with latitude and longitude coordinates using the WGS84 coordinate
-reference system (CRS). Here we will use global Hawkweed (*Hieracium
-pilosella*) occurrences downloaded from Global Biodiversity Information
-Facility (GBIF, 2026).
+The SDM requires species occurrence records to be specified in a table with latitude and longitude coordinates using the WGS84 coordinate reference system (CRS). Here we will use global Hawkweed (*Hieracium pilosella*) occurrences downloaded from Global Biodiversity Information Facility (GBIF, 2026).
 
-It is recommended to firstly ‘clean’ occurrence records to remove
-duplicates and incomplete or incorrect records via a tool such as
-*CoordinateCleaner* (Zizka et al., 2019). We will use occurrence records
-that were cleaned via *CoordinateCleaner*.
+It is recommended to firstly 'clean' occurrence records to remove duplicates and incomplete or incorrect records via a tool such as *CoordinateCleaner* (Zizka et al., 2019). We will use occurrence records that were cleaned via *CoordinateCleaner*.
+
 
 ``` r
 # Load cleaned Hawkweed (Hieracium pilosella) occurrences
@@ -100,19 +90,17 @@ terra::plot(terra::vect(occurrences_cleaned, crs = "EPSG:4326"),
             col = "red", pch = 20, alpha = 0.5, add = TRUE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" style="display: block; margin: auto;" />
+<div class="figure" style="text-align: center">
+<img src="man/figures/README-unnamed-chunk-3-1.png" alt="plot of chunk unnamed-chunk-3" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-3</p>
+</div>
 
 ### Step 3: Run the SDM
 
-To run a SDM we first build a model, then use it to predict the
-suitability for the area of interest using climate data with matching
-variables. Although this climate data may differ in its extent, CRS,
-resolution, or time frame (e.g. past or future climate), here we reuse
-the climate data used to build the model. We will build models and
-predict suitability for both our *Range bagging* and *Climatch* SDM
-methods.
+To run a SDM we first build a model, then use it to predict the suitability for the area of interest using climate data with matching variables. Although this climate data may differ in its extent, CRS, resolution, or time frame (e.g. past or future climate), here we reuse the climate data used to build the model. We will build models and predict suitability for both our *Range bagging* and *Climatch* SDM methods.
 
 #### Range bagging SDM
+
 
 ``` r
 # Run Range bagging SDM
@@ -124,9 +112,13 @@ terra::plot(rangebag_output, colNA = "grey",
             xlab = "Longitude (degrees)", ylab = "Latitude (degrees)")
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" style="display: block; margin: auto;" />
+<div class="figure" style="text-align: center">
+<img src="man/figures/README-unnamed-chunk-4-1.png" alt="plot of chunk unnamed-chunk-4" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-4</p>
+</div>
 
 #### Climatch SDM
+
 
 ``` r
 # Run Climatch SDM
@@ -138,28 +130,109 @@ terra::plot(climatch_output, colNA = "grey",
             xlab = "Longitude (degrees)", ylab = "Latitude (degrees)")
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" style="display: block; margin: auto;" />
+<div class="figure" style="text-align: center">
+<img src="man/figures/README-unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-5</p>
+</div>
+
+### Step 4: Assess environmental novelty
+
+Correlative SDMs identify statistical relationships between occurrence patterns and spatial environmental data to estimate the suitability of a location given its environment. Such models are powerful in that relationships estimated from one region (e.g., a species' native range) can be used to infer suitability in another region of interest. However, the projection region may have environmental conditions not represented in the model-fitting data — either because a variable is outside its model-fitting range, or because multiple variables combine to produce novel conditions — leading to model extrapolation.
+
+Model extrapolation can reduce prediction reliability, so it is important to understand the spatial distribution of novel environmental conditions so that model outputs can be interpreted appropriately. *bssdm* provides two tools for this purpose: *ExDet* (Mesgaran et al., 2014) and *MESS* (Elith et al., 2010).
+
+Both functions require a reference dataset: the climate values extracted at the species occurrence locations used to build the model.
+
+
+``` r
+# Extract climate values at occurrence locations (reference data for novelty assessment)
+ref_data <- terra::extract(climate_rast,
+                           terra::vect(occurrences_cleaned, crs = "EPSG:4326"),
+                           ID = FALSE)
+```
+
+#### MESS
+
+The Multivariate Environmental Similarity Surface (MESS; Elith et al., 2010) quantifies how similar each location's environmental conditions are to the reference (occurrence) data. Positive values indicate conditions within the reference range; negative values indicate novel (dissimilar) conditions. The `mess()` function also returns the most dissimilar variable (MoD) and most similar variable (MoS) for each location.
+
+
+``` r
+# Calculate MESS
+mess_output <- bssdm::mess(climate_rast, ref_data, full = TRUE)
+```
+
+
+``` r
+plot(mess_output)
+```
+
+<div class="figure" style="text-align: center">
+<img src="man/figures/README-unnamed-chunk-8-1.png" alt="plot of chunk unnamed-chunk-8" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-8</p>
+</div>
+
+
+``` r
+plot(mess_output, which = "mod")
+```
+
+<div class="figure" style="text-align: center">
+<img src="man/figures/README-unnamed-chunk-9-1.png" alt="plot of chunk unnamed-chunk-9" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-9</p>
+</div>
+
+#### ExDet
+
+The Extrapolation Detection tool (ExDet; Mesgaran et al., 2014) distinguishes between two types of environmental novelty. Type 1 (univariate) novelty occurs when one or more variables fall outside their reference range; Type 2 (multivariate) novelty occurs when the combination of variables is unusual even if individual variables are within range. The `exdet()` function returns a score where values less than 0 indicate Type 1 novelty, values between 0 and 1 indicate analog conditions, and values greater than 1 indicate Type 2 novelty.
+
+
+``` r
+# Calculate ExDet with most influential covariates
+exdet_output <- bssdm::exdet(climate_rast, ref_data, mic = TRUE)
+```
+
+
+``` r
+plot(exdet_output)
+```
+
+<div class="figure" style="text-align: center">
+<img src="man/figures/README-unnamed-chunk-11-1.png" alt="plot of chunk unnamed-chunk-11" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-11</p>
+</div>
+
+
+``` r
+plot(exdet_output, which = "mic1")
+```
+
+<div class="figure" style="text-align: center">
+<img src="man/figures/README-unnamed-chunk-12-1.png" alt="plot of chunk unnamed-chunk-12" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-12</p>
+</div>
+
+
+``` r
+plot(exdet_output, which = "mic2")
+```
+
+<div class="figure" style="text-align: center">
+<img src="man/figures/README-unnamed-chunk-13-1.png" alt="plot of chunk unnamed-chunk-13" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-13</p>
+</div>
 
 ## References
 
-ABARES (2020). ‘Climatch v2.0 User Manual’. Canberra.
-<https://climatch.cp1.agriculture.gov.au/> Accessed: November 2021.
+ABARES (2020). 'Climatch v2.0 User Manual'. Canberra. <https://climatch.cp1.agriculture.gov.au/> Accessed: November 2021.
 
-Drake, J. M. (2015). ‘Range bagging: a new method for ecological niche
-modelling from presence-only data’. *Journal of the Royal Society
-Interface*, 12(107), 20150086. <doi:10.1098/rsif.2015.0086>
+Drake, J. M. (2015). 'Range bagging: a new method for ecological niche modelling from presence-only data'. *Journal of the Royal Society Interface*, 12(107), 20150086. <doi:10.1098/rsif.2015.0086>
 
-Fick, S. E., Hijmans, R. J. (2017). ‘WorldClim 2: new 1-km spatial
-resolution climate surfaces for global land areas’. *International
-Journal of Climatology*, 37, 4302–4315. <doi:10.1002/joc.5086>
+Elith, J., Kearney, M., and Phillips, S. (2010). 'The art of modelling range-shifting species'. *Methods in Ecology and Evolution*, 1, 330–342. <doi:10.1111/j.2041-210X.2010.00036.x>
 
-GBIF.org (04 May 2026) ‘GBIF Occurrence Download’.
-<doi:10.15468/dl.q6q6fk>
+Fick, S. E., Hijmans, R. J. (2017). 'WorldClim 2: new 1-km spatial resolution climate surfaces for global land areas'. *International Journal of Climatology*, 37, 4302–4315. <doi:10.1002/joc.5086>
 
-Zizka, A., Silvestro, D., Andermann, T., Azevedo, J., Duarte Ritter, C.,
-Edler, D., Farooq, H., Herdean, A., Ariza, M., Scharn, R., Svanteson,
-S., Wengstrom, N., Zizka, V., & Antonelli, A. (2019).
-‘CoordinateCleaner: standardized cleaning of occurrence records from
-biological collection databases.’ *Methods in Ecology and Evolution*, 7.
-<doi:10.1111/2041-210X.13152>, R package version 3.0.1,
-<https://github.com/ropensci/CoordinateCleaner>.
+GBIF.org (04 May 2026) 'GBIF Occurrence Download'. <doi:10.15468/dl.q6q6fk>
+
+Mesgaran, M. B., Cousens, R. D., and Webber, B. L. (2014). 'Here be dragons: a tool for quantifying novelty due to covariate range and correlation change when projecting species distribution models'. *Diversity and Distributions*, 20(10), 1147–1159. <doi:10.1111/ddi.12209>
+
+Zizka, A., Silvestro, D., Andermann, T., Azevedo, J., Duarte Ritter, C., Edler, D., Farooq, H., Herdean, A., Ariza, M., Scharn, R., Svanteson, S., Wengstrom, N., Zizka, V., & Antonelli, A. (2019). 'CoordinateCleaner: standardized cleaning of occurrence records from biological collection databases.' *Methods in Ecology and Evolution*, 7. <doi:10.1111/2041-210X.13152>, R package version 3.0.1, <https://github.com/ropensci/CoordinateCleaner>.
