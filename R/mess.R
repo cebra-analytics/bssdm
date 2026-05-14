@@ -43,7 +43,6 @@
 #' \dontrun{
 #' library(geodata)
 #' library(terra)
-#' library(tmap)
 #' bio <- worldclim_global("bio", res = 10, path = tempdir())
 #' aus <- gadm("AUS", level = 0, resolution = 2, path = tempdir())
 #' occ <- spatSample(aus, size = 100, method = "random")
@@ -51,41 +50,9 @@
 #' m <- mess(bio, ref, full = TRUE)
 #'
 #' # Plot outputs
-#' tmap::tm_shape(m$mess) +
-#'   tmap::tm_raster(
-#'     col.scale = tmap::tm_scale_continuous(
-#'       values = "matplotlib.rd_bu",
-#'       midpoint = 0
-#'     ),
-#'     col.legend = tmap::tm_legend(title = "MESS")
-#'   ) +
-#'   tmap::tm_credits(
-#'     "Positive values indicate similarity, negative values indicate dissimilarity", 
-#'     position = tmap::tm_pos_out("center", "bottom")
-#'   ) +
-#'   tmap::tm_title("Multivariate Environmental Similarity")
-#'
-#' tmap::tm_shape(m$mod) +
-#'   tmap::tm_raster(
-#'     col.scale = tmap::tm_scale_categorical(
-#'       values = "20",
-#'       n.max = nrow(levels(m$mod)[[1]])
-#'     ),
-#'     col.legend = tmap::tm_legend(title = "Most dissimilar\ncovariate (MoD)"),
-#'     col.chart = tmap::tm_chart_donut()
-#'   ) +
-#'   tmap::tm_title("Most dissimilar covariate (MoD)")
-#'
-#' tmap::tm_shape(m$mos) +
-#'   tmap::tm_raster(
-#'     col.scale = tmap::tm_scale_categorical(
-#'       values = "20",
-#'       n.max = nrow(levels(m$mos)[[1]])
-#'     ),
-#'     col.legend = tmap::tm_legend(title = "Most similar\ncovariate (MoS)"),
-#'     col.chart = tmap::tm_chart_donut()
-#'   ) +
-#'   tmap::tm_title("Most similar covariate (MoS)")
+#' plot(m)
+#' plot(m, which = "mod")
+#' plot(m, which = "mos")
 #' }
 mess <- function(x, ref, full = FALSE, filename = "", ...) {
   UseMethod("mess")
