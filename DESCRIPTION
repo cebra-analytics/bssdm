@@ -36,5 +36,6 @@ Collate:
     'climatch.predict.R'
     'exdet.R'
     'mess.R'
+    'plot.R'
     'rangebag.R'
     'rangebag.predict.R'
