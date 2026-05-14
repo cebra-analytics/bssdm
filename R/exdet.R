@@ -244,7 +244,7 @@ exdet.SpatRaster <- function(
       exdet = out_exdet
     )
   }
-  class(result) <- "ExdetResult"
+  class(result) <- c("ExdetResult", class(result))
   return(result)
 }
 

@@ -191,7 +191,7 @@ mess.SpatRaster <- function(x, ref, full = FALSE, filename = "", ...) {
       mos = out_mos
     )
   }
-  class(result) <- "MessResult"
+  class(result) <- c("MessResult", class(result))
   return(result)
 }
 
