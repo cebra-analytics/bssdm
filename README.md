@@ -26,7 +26,7 @@ The package also provides two tools for assessing environmental novelty in the p
 
 You can install the latest version of *bssdm* from [GitHub](https://github.com/) with:
 
-``` r
+```r
 remotes::install_github("cebra-analytics/bssdm")
 ```
 
@@ -91,8 +91,8 @@ terra::plot(terra::vect(occurrences_cleaned, crs = "EPSG:4326"),
 ```
 
 <div class="figure" style="text-align: center">
-<img src="man/figures/README-unnamed-chunk-3-1.png" alt="plot of chunk unnamed-chunk-3" width="100%" />
-<p class="caption">plot of chunk unnamed-chunk-3</p>
+<img src="man/figures/README-occurrences-1.png" alt="BIOCLIM Mean Diurnal Range &amp; Hawkweed occurrences (red)" width="100%" />
+<p class="caption">BIOCLIM Mean Diurnal Range & Hawkweed occurrences (red)</p>
 </div>
 
 ### Step 3: Run the SDM
@@ -113,8 +113,8 @@ terra::plot(rangebag_output, colNA = "grey",
 ```
 
 <div class="figure" style="text-align: center">
-<img src="man/figures/README-unnamed-chunk-4-1.png" alt="plot of chunk unnamed-chunk-4" width="100%" />
-<p class="caption">plot of chunk unnamed-chunk-4</p>
+<img src="man/figures/README-rangebag_model-1.png" alt="Range bagging SDM predicted climate suitability" width="100%" />
+<p class="caption">Range bagging SDM predicted climate suitability</p>
 </div>
 
 #### Climatch SDM
@@ -131,8 +131,8 @@ terra::plot(climatch_output, colNA = "grey",
 ```
 
 <div class="figure" style="text-align: center">
-<img src="man/figures/README-unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5" width="100%" />
-<p class="caption">plot of chunk unnamed-chunk-5</p>
+<img src="man/figures/README-climatch_model-1.png" alt="Climatch SDM predicted climate suitability" width="100%" />
+<p class="caption">Climatch SDM predicted climate suitability</p>
 </div>
 
 ### Step 4: Assess environmental novelty
@@ -167,8 +167,8 @@ plot(mess_output)
 ```
 
 <div class="figure" style="text-align: center">
-<img src="man/figures/README-unnamed-chunk-8-1.png" alt="plot of chunk unnamed-chunk-8" width="100%" />
-<p class="caption">plot of chunk unnamed-chunk-8</p>
+<img src="man/figures/README-plot_mess-1.png" alt="MESS output" width="100%" />
+<p class="caption">MESS output</p>
 </div>
 
 
@@ -177,8 +177,8 @@ plot(mess_output, which = "mod")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="man/figures/README-unnamed-chunk-9-1.png" alt="plot of chunk unnamed-chunk-9" width="100%" />
-<p class="caption">plot of chunk unnamed-chunk-9</p>
+<img src="man/figures/README-plot_mess_mod-1.png" alt="Most dissimilar covariate (MoD)" width="100%" />
+<p class="caption">Most dissimilar covariate (MoD)</p>
 </div>
 
 #### ExDet
@@ -197,8 +197,8 @@ plot(exdet_output)
 ```
 
 <div class="figure" style="text-align: center">
-<img src="man/figures/README-unnamed-chunk-11-1.png" alt="plot of chunk unnamed-chunk-11" width="100%" />
-<p class="caption">plot of chunk unnamed-chunk-11</p>
+<img src="man/figures/README-plot_exdet-1.png" alt="ExDet output" width="100%" />
+<p class="caption">ExDet output</p>
 </div>
 
 
@@ -207,8 +207,8 @@ plot(exdet_output, which = "mic1")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="man/figures/README-unnamed-chunk-12-1.png" alt="plot of chunk unnamed-chunk-12" width="100%" />
-<p class="caption">plot of chunk unnamed-chunk-12</p>
+<img src="man/figures/README-plot_exdet_mic1-1.png" alt="Most influential covariate for Type 1 novelty" width="100%" />
+<p class="caption">Most influential covariate for Type 1 novelty</p>
 </div>
 
 
@@ -217,8 +217,8 @@ plot(exdet_output, which = "mic2")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="man/figures/README-unnamed-chunk-13-1.png" alt="plot of chunk unnamed-chunk-13" width="100%" />
-<p class="caption">plot of chunk unnamed-chunk-13</p>
+<img src="man/figures/README-plot_exdet_mic2-1.png" alt="Most influential covariate for Type 2 novelty" width="100%" />
+<p class="caption">Most influential covariate for Type 2 novelty</p>
 </div>
 
 ## References
