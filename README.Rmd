@@ -87,7 +87,9 @@ To run a SDM we first build a model, then use it to predict the suitability for 
 
 ```{r rangebag_model, message = FALSE, fig.align = "center", fig.dim = c(12, 7)}
 # Run Range bagging SDM
-rangebag_model <- bssdm::rangebag(climate_rast, occurrences_cleaned)
+rangebag_model <- bssdm::rangebag(
+  climate_rast, occurrences_cleaned, parallel_cores = 1
+)
 rangebag_output <- predict(rangebag_model, climate_rast, raw_output = FALSE)
 # Plot the Range bagging SDM predicted climate suitability
 terra::plot(rangebag_output, colNA = "grey",
@@ -99,7 +101,9 @@ terra::plot(rangebag_output, colNA = "grey",
 
 ```{r climatch_model, message = FALSE, fig.align = "center", fig.dim = c(12, 7)}
 # Run Climatch SDM
-climatch_model <- bssdm::climatch(climate_rast, occurrences_cleaned)
+climatch_model <- bssdm::climatch(
+  climate_rast, occurrences_cleaned, parallel_cores = 1
+)
 climatch_output <- predict(climatch_model, climate_rast, raw_output = FALSE)
 # Plot the Climatch SDM predicted climate suitability
 terra::plot(climatch_output, colNA = "grey",
