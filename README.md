@@ -52,6 +52,22 @@ predicted environmental suitability is desired. Here we will use a
 selection of global climate data from *WorldClim* (Fick & Hijmans, 2017;
 <http://www.worldclim.org>).
 
+While not required to use the *bssdm* package, we use the `geodata`
+package here to download global climate data for the example. The
+`geodata` package can be installed with:
+
+``` r
+install.packages("geodata")
+```
+
+The climate data can then be downloaded with:
+
+``` r
+climate_rast_all <- geodata::worldclim_global(
+  var = "bio", res = 10, path = tempdir()
+)
+```
+
 ``` r
 # Climate WorldClim (BIOCLIM) data
 # BIO02: Mean Diurnal Range
@@ -60,21 +76,20 @@ selection of global climate data from *WorldClim* (Fick & Hijmans, 2017;
 # BIO12: Annual Precipitation
 # BIO14: Precipitation of Driest Month
 # BIO15: Precipitation Seasonality (Coefficient of Variation)
-climate_rast <- terra::rast(sprintf("data/bioclim_10m/wc2.1bio%02d.tif",
-                                    c(2,5,11,12,14,15)))
+climate_rast <- climate_rast_all[[c(2,5,11,12,14,15)]]
 climate_rast
 #> class       : SpatRaster 
 #> size        : 1080, 2160, 6  (nrow, ncol, nlyr)
 #> resolution  : 0.1666667, 0.1666667  (x, y)
 #> extent      : -180, 180, -90, 90  (xmin, xmax, ymin, ymax)
 #> coord. ref. : lon/lat WGS 84 (EPSG:4326) 
-#> sources     : wc2.1bio02.tif  
-#>               wc2.1bio05.tif  
-#>               wc2.1bio11.tif  
+#> sources     : wc2.1_10m_bio_2.tif  
+#>               wc2.1_10m_bio_5.tif  
+#>               wc2.1_10m_bio_11.tif  
 #>               ... and 3 more sources
-#> names       : wc2.1bio02, wc2.1bio05, wc2.1bio11, wc2.1bio12, wc2.1bio14, wc2.1bio15 
-#> min values  :    1.00000,  -29.68600,  -66.31125,          0,          0,     0.0000 
-#> max values  :   21.14754,   48.08275,   29.15299,      11191,        484,   229.0017
+#> names       : wc2.1~bio_2, wc2.1~bio_5, wc2.1~io_11, wc2.1~io_12, wc2.1~io_14, wc2.1~io_15 
+#> min values  :     1.00000,   -29.68600,   -66.31125,           0,           0,      0.0000 
+#> max values  :    21.14754,    48.08275,    29.15299,       11191,         484,    229.0017
 ```
 
 ### Step 2: Obtain species occurrence records
