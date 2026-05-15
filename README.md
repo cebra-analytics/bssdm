@@ -262,15 +262,17 @@ ABARES (2020). ‘Climatch v2.0 User Manual’. Canberra.
 
 Drake, J. M. (2015). ‘Range bagging: a new method for ecological niche
 modelling from presence-only data’. *Journal of the Royal Society
-Interface*, 12(107), 20150086. [doi:10.1098/rsif.2015.0086](https://doi.org/10.1098/rsif.2015.0086)
+Interface*, 12(107), 20150086.
+[doi:10.1098/rsif.2015.0086](https://doi.org/10.1098/rsif.2015.0086)
 
 Elith, J., Kearney, M., and Phillips, S. (2010). ‘The art of modelling
 range-shifting species’. *Methods in Ecology and Evolution*, 1, 330–342.
-<doi:10.1111/j.2041-210X.2010.00036.x>
+[doi:10.1111/j.2041-210X.2010.00036.x](https://doi.org/10.1111/j.2041-210X.2010.00036.x)
 
 Fick, S. E., Hijmans, R. J. (2017). ‘WorldClim 2: new 1-km spatial
 resolution climate surfaces for global land areas’. *International
-Journal of Climatology*, 37, 4302–4315. [doi:10.1002/joc.5086](https://doi.org/10.1002/joc.5086)
+Journal of Climatology*, 37, 4302–4315.
+[doi:10.1002/joc.5086](https://doi.org/10.1002/joc.5086)
 
 GBIF.org (04 May 2026) ‘GBIF Occurrence Download’.
 [doi:10.15468/dl.q6q6fk](https://doi.org/10.15468/dl.q6q6fk)
@@ -279,12 +281,13 @@ Mesgaran, M. B., Cousens, R. D., and Webber, B. L. (2014). ‘Here be
 dragons: a tool for quantifying novelty due to covariate range and
 correlation change when projecting species distribution models’.
 *Diversity and Distributions*, 20(10), 1147–1159.
-<doi:10.1111/ddi.12209>
+[doi:10.1111/ddi.12209](https://doi.org/10.1111/ddi.12209)
 
 Zizka, A., Silvestro, D., Andermann, T., Azevedo, J., Duarte Ritter, C.,
 Edler, D., Farooq, H., Herdean, A., Ariza, M., Scharn, R., Svanteson,
 S., Wengstrom, N., Zizka, V., & Antonelli, A. (2019).
 ‘CoordinateCleaner: standardized cleaning of occurrence records from
 biological collection databases.’ *Methods in Ecology and Evolution*, 7.
-[doi:10.1111/2041-210X.13152](https://doi.org/10.1111/2041-210X.13152), R package version 3.0.1,
+[doi:10.1111/2041-210X.13152](https://doi.org/10.1111/2041-210X.13152),
+R package version 3.0.1,
 <https://github.com/ropensci/CoordinateCleaner>.
