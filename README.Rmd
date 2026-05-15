@@ -67,7 +67,7 @@ The SDM requires species occurrence records to be specified in a table with lati
 
 It is recommended to firstly 'clean' occurrence records to remove duplicates and incomplete or incorrect records via a tool such as *CoordinateCleaner* (Zizka et al., 2019). We will use occurrence records that were cleaned via *CoordinateCleaner*.
 
-```{r occurrences, message = FALSE, fig.align = "center", fig.dim = c(12, 7), fig.cap = "BIOCLIM Mean Diurnal Range & Hawkweed occurrences (red)"}
+```{r occurrences, message = FALSE, fig.align = "center", fig.dim = c(12, 7)}
 # Load cleaned Hawkweed (Hieracium pilosella) occurrences
 occurrences_cleaned <- read.csv("data/hawkweed_occurrences_cleaned.csv")
 head(occurrences_cleaned)
@@ -85,7 +85,7 @@ To run a SDM we first build a model, then use it to predict the suitability for 
 
 #### Range bagging SDM
 
-```{r rangebag_model, message = FALSE, fig.align = "center", fig.dim = c(12, 7), fig.cap = "Range bagging SDM predicted climate suitability"}
+```{r rangebag_model, message = FALSE, fig.align = "center", fig.dim = c(12, 7)}
 # Run Range bagging SDM
 rangebag_model <- bssdm::rangebag(climate_rast, occurrences_cleaned)
 rangebag_output <- predict(rangebag_model, climate_rast, raw_output = FALSE)
@@ -97,7 +97,7 @@ terra::plot(rangebag_output, colNA = "grey",
 
 #### Climatch SDM
 
-```{r climatch_model, message = FALSE, fig.align = "center", fig.dim = c(12, 7), fig.cap = "Climatch SDM predicted climate suitability"}
+```{r climatch_model, message = FALSE, fig.align = "center", fig.dim = c(12, 7)}
 # Run Climatch SDM
 climatch_model <- bssdm::climatch(climate_rast, occurrences_cleaned)
 climatch_output <- predict(climatch_model, climate_rast, raw_output = FALSE)
@@ -131,11 +131,11 @@ The Multivariate Environmental Similarity Surface (MESS; Elith et al., 2010) qua
 mess_output <- bssdm::mess(climate_rast, ref_data, full = TRUE)
 ```
 
-```{r plot_mess, message = FALSE, fig.align = "center", fig.dim = c(10, 6), fig.cap = "MESS output"}
+```{r plot_mess, message = FALSE, fig.align = "center", fig.dim = c(10, 6)}
 plot(mess_output)
 ```
 
-```{r plot_mess_mod, message = FALSE, fig.align = "center", fig.dim = c(12, 6), fig.cap = "Most dissimilar covariate (MoD)"}
+```{r plot_mess_mod, message = FALSE, fig.align = "center", fig.dim = c(12, 6)}
 plot(mess_output, which = "mod")
 ```
 
@@ -148,15 +148,15 @@ The Extrapolation Detection tool (ExDet; Mesgaran et al., 2014) distinguishes be
 exdet_output <- bssdm::exdet(climate_rast, ref_data, mic = TRUE)
 ```
 
-```{r plot_exdet, message = FALSE, fig.align = "center", fig.dim = c(10, 6), fig.cap = "ExDet output"}
+```{r plot_exdet, message = FALSE, fig.align = "center", fig.dim = c(10, 6)}
 plot(exdet_output)
 ```
 
-```{r plot_exdet_mic1, message = FALSE, fig.align = "center", fig.dim = c(12, 6), fig.cap = "Most influential covariate for Type 1 novelty"}
+```{r plot_exdet_mic1, message = FALSE, fig.align = "center", fig.dim = c(12, 6)}
 plot(exdet_output, which = "mic1")
 ```
 
-```{r plot_exdet_mic2, message = FALSE, fig.align = "center", fig.dim = c(12, 6), fig.cap = "Most influential covariate for Type 2 novelty"}
+```{r plot_exdet_mic2, message = FALSE, fig.align = "center", fig.dim = c(12, 6)}
 plot(exdet_output, which = "mic2")
 ```
 
