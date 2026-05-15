@@ -62,7 +62,6 @@
 #' \dontrun{
 #' library(geodata)
 #' library(terra)
-#' library(tmap)
 #' bio <- worldclim_global("bio", res = 10, path = tempdir())
 #' aus <- gadm("AUS", level = 0, resolution = 2, path = tempdir())
 #' occ <- spatSample(aus, size = 100, method = "random")
@@ -70,46 +69,9 @@
 #' ex <- exdet(bio, ref, mic = TRUE)
 #'
 #' # Plot outputs
-#' tmap::tm_shape(ex$exdet) +
-#'   tmap::tm_raster(
-#'     col.scale = tmap::tm_scale_continuous(values = "matplotlib.rd_bu", midpoint = 0),
-#'     col.legend = tmap::tm_legend(
-#'       position = tmap::tm_pos_out("right", "center"),
-#'       title = "ExDet"
-#'     )
-#'   ) +
-#'   tmap::tm_credits(
-#'     paste(
-#'       "Positive values indicate covariate correlations.",
-#'       "Negative values indicate novel univariate ranges.",
-#'       "Values around zero indicate analog conditions.",
-#'       sep = "\n"
-#'     ),
-#'     position = tmap::tm_pos_out("center", "bottom")
-#'   ) +
-#'   tmap::tm_title("Extrapolation Detection")
-#'
-#' tmap::tm_shape(ex$mic1) +
-#'   tmap::tm_raster(
-#'     col.scale = tmap::tm_scale_categorical(
-#'       values = "20",
-#'       n.max = nrow(levels(ex$mic1)[[1]])
-#'     ),
-#'     col.legend = tmap::tm_legend(title = "Most influential\ncovariate (MIC1)"),
-#'     col.chart = tmap::tm_chart_donut()
-#'   ) +
-#'   tmap::tm_title("Type 1 novelty: Most influential covariate")
-#'
-#' tmap::tm_shape(ex$mic2) +
-#'   tmap::tm_raster(
-#'     col.scale = tmap::tm_scale_categorical(
-#'       values = "20",
-#'       n.max = nrow(levels(ex$mic2)[[1]])
-#'     ),
-#'     col.legend = tmap::tm_legend(title = "Most influential\ncovariate (MIC2)"),
-#'     col.chart = tmap::tm_chart_donut()
-#'   ) +
-#'   tmap::tm_title("Type 2 novelty: Most influential covariate")
+#' plot(ex)
+#' plot(ex, which = "mic1")
+#' plot(ex, which = "mic2")
 #' }
 exdet <- function(
   x,
@@ -272,16 +234,18 @@ exdet.SpatRaster <- function(
 
   # Return results
   if (isTRUE(mic)) {
-    return(list(
+    result <- list(
       exdet = out_exdet,
       mic1 = out_mic1,
       mic2 = out_mic2
-    ))
+    )
   } else {
-    return(list(
+    result <- list(
       exdet = out_exdet
-    ))
+    )
   }
+  class(result) <- c("ExdetResult", class(result))
+  return(result)
 }
 
 #' @name exdet
