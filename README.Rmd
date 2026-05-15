@@ -48,7 +48,7 @@ The following example generates the environmental suitability for a Hawkweed spe
 
 The SDM requires spatial environmental data in the form of *GeoTIFF* raster layers for the area of interest, encapsulating the species occurrence records (to build the model), as well as locations where the predicted environmental suitability is desired. Here we will use a selection of global climate data from *WorldClim* (Fick & Hijmans, 2017; <http://www.worldclim.org>).
 
-While not required to use the *bssdm* package, we use the `geodata` package here to download global climate data for the example. The `geodata` package can be installed with:
+While not required to use the *bssdm* package, we use the *geodata* package here to download global climate data for the example. The *geodata* package can be installed with:
 ```{r install_geodata, eval = FALSE}
 install.packages("geodata")
 ```
@@ -79,7 +79,7 @@ The SDM requires species occurrence records to be specified in a table with lati
 ```{r occurrences, message = FALSE, fig.align = "center", fig.dim = c(12, 7)}
 library(bssdm)
 
-# Cleaned Hawkweed (*Hieracium pilosella*) occurrences (see ?hawkweed for details)
+# Cleaned Hawkweed (Hieracium pilosella) occurrences (see ?hawkweed for details)
 head(hawkweed)
 
 # Plot BIOCLIM BIO02 & occurrences

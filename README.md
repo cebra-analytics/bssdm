@@ -52,9 +52,9 @@ predicted environmental suitability is desired. Here we will use a
 selection of global climate data from *WorldClim* (Fick & Hijmans, 2017;
 <http://www.worldclim.org>).
 
-While not required to use the *bssdm* package, we use the `geodata`
+While not required to use the *bssdm* package, we use the *geodata*
 package here to download global climate data for the example. The
-`geodata` package can be installed with:
+*geodata* package can be installed with:
 
 ``` r
 install.packages("geodata")
@@ -103,7 +103,8 @@ al., 2019) to remove duplicates and incomplete or incorrect records.
 
 ``` r
 library(bssdm)
-# Cleaned Hawkweed (*Hieracium pilosella*) occurrences (see ?hawkweed for details)
+
+# Cleaned Hawkweed (Hieracium pilosella) occurrences (see ?hawkweed for details)
 head(hawkweed)
 #>         lon      lat verified
 #> 1  7.999168 44.85531        1
@@ -112,6 +113,7 @@ head(hawkweed)
 #> 4 12.431944 50.68472        1
 #> 5 12.483333 50.70000        1
 #> 6 12.506383 50.73638        1
+
 # Plot BIOCLIM BIO02 & occurrences
 terra::plot(climate_rast[[1]], colNA = "grey",
             main = "BIOCLIM Mean Diurnal Range & Hawkweed occurrences (red)",
