@@ -1,0 +1,5 @@
+url: https://cebra-analytics.github.io/bssdm
+
+template:
+  bootstrap: 5
+  light-switch: true
