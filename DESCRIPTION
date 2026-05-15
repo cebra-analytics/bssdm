@@ -34,6 +34,7 @@ Collate:
     'Rangebag-class.R'
     'climatch.R'
     'climatch.predict.R'
+    'data.R'
     'exdet.R'
     'mess.R'
     'plot.R'

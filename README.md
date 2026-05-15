@@ -98,17 +98,13 @@ The SDM requires species occurrence records to be specified in a table
 with latitude and longitude coordinates using the WGS84 coordinate
 reference system (CRS). Here we will use global Hawkweed (*Hieracium
 pilosella*) occurrences downloaded from Global Biodiversity Information
-Facility (GBIF, 2026).
-
-It is recommended to firstly ‘clean’ occurrence records to remove
-duplicates and incomplete or incorrect records via a tool such as
-*CoordinateCleaner* (Zizka et al., 2019). We will use occurrence records
-that were cleaned via *CoordinateCleaner*.
+Facility (GBIF, 2026) and cleaned with *CoordinateCleaner* (Zizka et
+al., 2019) to remove duplicates and incomplete or incorrect records.
 
 ``` r
-# Load cleaned Hawkweed (Hieracium pilosella) occurrences
-occurrences_cleaned <- read.csv("data/hawkweed_occurrences_cleaned.csv")
-head(occurrences_cleaned)
+library(bssdm)
+# Cleaned Hawkweed (*Hieracium pilosella*) occurrences (see ?hawkweed for details)
+head(hawkweed)
 #>         lon      lat verified
 #> 1  7.999168 44.85531        1
 #> 2 14.782217 50.90555        1
@@ -120,7 +116,7 @@ head(occurrences_cleaned)
 terra::plot(climate_rast[[1]], colNA = "grey",
             main = "BIOCLIM Mean Diurnal Range & Hawkweed occurrences (red)",
             xlab = "Longitude (degrees)", ylab = "Latitude (degrees)")
-terra::plot(terra::vect(occurrences_cleaned, crs = "EPSG:4326"),
+terra::plot(terra::vect(hawkweed, crs = "EPSG:4326"),
             col = "red", pch = 20, alpha = 0.5, add = TRUE)
 ```
 
