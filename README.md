@@ -122,7 +122,7 @@ terra::plot(terra::vect(hawkweed, crs = "EPSG:4326"),
             col = "red", pch = 20, alpha = 0.5, add = TRUE)
 ```
 
-<img src="man/figures/README-occurrences-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-occurrences-1.png" alt="Map of global BIOCLIM Mean Diurnal Range with red points marking Hawkweed occurrence records." width="100%" style="display: block; margin: auto;" />
 
 ### Step 3: Run the SDM
 
@@ -148,7 +148,7 @@ terra::plot(rangebag_output, colNA = "grey",
             xlab = "Longitude (degrees)", ylab = "Latitude (degrees)")
 ```
 
-<img src="man/figures/README-rangebag_model-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-rangebag_model-1.png" alt="Global map of Range bagging SDM predicted climate suitability for Hawkweed." width="100%" style="display: block; margin: auto;" />
 
 #### Climatch SDM
 
@@ -164,7 +164,7 @@ terra::plot(climatch_output, colNA = "grey",
             xlab = "Longitude (degrees)", ylab = "Latitude (degrees)")
 ```
 
-<img src="man/figures/README-climatch_model-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-climatch_model-1.png" alt="Global map of Climatch SDM predicted climate suitability for Hawkweed." width="100%" style="display: block; margin: auto;" />
 
 ### Step 4: Assess environmental novelty
 
@@ -213,13 +213,13 @@ mess_output <- bssdm::mess(climate_rast, ref_data, full = TRUE)
 plot(mess_output)
 ```
 
-<img src="man/figures/README-plot_mess-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-plot_mess-1.png" alt="Global map of MESS scores showing environmental similarity to Hawkweed occurrence locations." width="100%" style="display: block; margin: auto;" />
 
 ``` r
 plot(mess_output, which = "mod")
 ```
 
-<img src="man/figures/README-plot_mess_mod-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-plot_mess_mod-1.png" alt="Global map of MESS most dissimilar variable (MoD) for each location relative to Hawkweed occurrence data." width="100%" style="display: block; margin: auto;" />
 
 #### ExDet
 
@@ -241,19 +241,19 @@ exdet_output <- bssdm::exdet(climate_rast, ref_data, mic = TRUE)
 plot(exdet_output)
 ```
 
-<img src="man/figures/README-plot_exdet-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-plot_exdet-1.png" alt="Global map of ExDet scores distinguishing Type 1 (univariate) and Type 2 (multivariate) environmental novelty." width="100%" style="display: block; margin: auto;" />
 
 ``` r
 plot(exdet_output, which = "mic1")
 ```
 
-<img src="man/figures/README-plot_exdet_mic1-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-plot_exdet_mic1-1.png" alt="Global map of the most influential covariate for Type 1 (univariate) ExDet novelty." width="100%" style="display: block; margin: auto;" />
 
 ``` r
 plot(exdet_output, which = "mic2")
 ```
 
-<img src="man/figures/README-plot_exdet_mic2-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-plot_exdet_mic2-1.png" alt="Global map of the most influential covariate for Type 2 (multivariate) ExDet novelty." width="100%" style="display: block; margin: auto;" />
 
 ## References
 

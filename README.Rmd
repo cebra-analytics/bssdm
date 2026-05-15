@@ -76,7 +76,7 @@ climate_rast
 
 The SDM requires species occurrence records to be specified in a table with latitude and longitude coordinates using the WGS84 coordinate reference system (CRS). Here we will use global Hawkweed (*Hieracium pilosella*) occurrences downloaded from Global Biodiversity Information Facility (GBIF, 2026) and cleaned with *CoordinateCleaner* (Zizka et al., 2019) to remove duplicates and incomplete or incorrect records.
 
-```{r occurrences, message = FALSE, fig.align = "center", fig.dim = c(12, 7)}
+```{r occurrences, message = FALSE, fig.align = "center", fig.dim = c(12, 7), fig.alt = "Map of global BIOCLIM Mean Diurnal Range with red points marking Hawkweed occurrence records."}
 library(bssdm)
 
 # Cleaned Hawkweed (Hieracium pilosella) occurrences (see ?hawkweed for details)
@@ -96,7 +96,7 @@ To run a SDM we first build a model, then use it to predict the suitability for 
 
 #### Range bagging SDM
 
-```{r rangebag_model, message = FALSE, fig.align = "center", fig.dim = c(12, 7)}
+```{r rangebag_model, message = FALSE, fig.align = "center", fig.dim = c(12, 7), fig.alt = "Global map of Range bagging SDM predicted climate suitability for Hawkweed."}
 # Run Range bagging SDM
 rangebag_model <- bssdm::rangebag(
   climate_rast, hawkweed, parallel_cores = 1
@@ -110,7 +110,7 @@ terra::plot(rangebag_output, colNA = "grey",
 
 #### Climatch SDM
 
-```{r climatch_model, message = FALSE, fig.align = "center", fig.dim = c(12, 7)}
+```{r climatch_model, message = FALSE, fig.align = "center", fig.dim = c(12, 7), fig.alt = "Global map of Climatch SDM predicted climate suitability for Hawkweed."}
 # Run Climatch SDM
 climatch_model <- bssdm::climatch(
   climate_rast, hawkweed, parallel_cores = 1
@@ -146,11 +146,11 @@ The Multivariate Environmental Similarity Surface (MESS; Elith et al., 2010) qua
 mess_output <- bssdm::mess(climate_rast, ref_data, full = TRUE)
 ```
 
-```{r plot_mess, message = FALSE, fig.align = "center", fig.dim = c(10, 6)}
+```{r plot_mess, message = FALSE, fig.align = "center", fig.dim = c(10, 6), fig.alt = "Global map of MESS scores showing environmental similarity to Hawkweed occurrence locations."}
 plot(mess_output)
 ```
 
-```{r plot_mess_mod, message = FALSE, fig.align = "center", fig.dim = c(12, 6)}
+```{r plot_mess_mod, message = FALSE, fig.align = "center", fig.dim = c(12, 6), fig.alt = "Global map of MESS most dissimilar variable (MoD) for each location relative to Hawkweed occurrence data."}
 plot(mess_output, which = "mod")
 ```
 
@@ -163,15 +163,15 @@ The Extrapolation Detection tool (ExDet; Mesgaran et al., 2014) distinguishes be
 exdet_output <- bssdm::exdet(climate_rast, ref_data, mic = TRUE)
 ```
 
-```{r plot_exdet, message = FALSE, fig.align = "center", fig.dim = c(10, 6)}
+```{r plot_exdet, message = FALSE, fig.align = "center", fig.dim = c(10, 6), fig.alt = "Global map of ExDet scores distinguishing Type 1 (univariate) and Type 2 (multivariate) environmental novelty."}
 plot(exdet_output)
 ```
 
-```{r plot_exdet_mic1, message = FALSE, fig.align = "center", fig.dim = c(12, 6)}
+```{r plot_exdet_mic1, message = FALSE, fig.align = "center", fig.dim = c(12, 6), fig.alt = "Global map of the most influential covariate for Type 1 (univariate) ExDet novelty."}
 plot(exdet_output, which = "mic1")
 ```
 
-```{r plot_exdet_mic2, message = FALSE, fig.align = "center", fig.dim = c(12, 6)}
+```{r plot_exdet_mic2, message = FALSE, fig.align = "center", fig.dim = c(12, 6), fig.alt = "Global map of the most influential covariate for Type 2 (multivariate) ExDet novelty."}
 plot(exdet_output, which = "mic2")
 ```
 
