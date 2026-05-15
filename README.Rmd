@@ -99,7 +99,7 @@ To run a SDM we first build a model, then use it to predict the suitability for 
 ```{r rangebag_model, message = FALSE, fig.align = "center", fig.dim = c(12, 7)}
 # Run Range bagging SDM
 rangebag_model <- bssdm::rangebag(
-  climate_rast, occurrences_cleaned, parallel_cores = 1
+  climate_rast, hawkweed, parallel_cores = 1
 )
 rangebag_output <- predict(rangebag_model, climate_rast, raw_output = FALSE)
 # Plot the Range bagging SDM predicted climate suitability
@@ -113,7 +113,7 @@ terra::plot(rangebag_output, colNA = "grey",
 ```{r climatch_model, message = FALSE, fig.align = "center", fig.dim = c(12, 7)}
 # Run Climatch SDM
 climatch_model <- bssdm::climatch(
-  climate_rast, occurrences_cleaned, parallel_cores = 1
+  climate_rast, hawkweed, parallel_cores = 1
 )
 climatch_output <- predict(climatch_model, climate_rast, raw_output = FALSE)
 # Plot the Climatch SDM predicted climate suitability
@@ -133,7 +133,7 @@ Both functions require a reference dataset: the climate values extracted at the 
 ```{r ref_data, message = FALSE}
 # Extract climate values at occurrence locations (reference data for novelty assessment)
 ref_data <- terra::extract(climate_rast,
-                           terra::vect(occurrences_cleaned, crs = "EPSG:4326"),
+                           terra::vect(hawkweed, crs = "EPSG:4326"),
                            ID = FALSE)
 ```
 

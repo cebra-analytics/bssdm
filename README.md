@@ -139,7 +139,7 @@ methods.
 ``` r
 # Run Range bagging SDM
 rangebag_model <- bssdm::rangebag(
-  climate_rast, occurrences_cleaned, parallel_cores = 1
+  climate_rast, hawkweed, parallel_cores = 1
 )
 rangebag_output <- predict(rangebag_model, climate_rast, raw_output = FALSE)
 # Plot the Range bagging SDM predicted climate suitability
@@ -155,7 +155,7 @@ terra::plot(rangebag_output, colNA = "grey",
 ``` r
 # Run Climatch SDM
 climatch_model <- bssdm::climatch(
-  climate_rast, occurrences_cleaned, parallel_cores = 1
+  climate_rast, hawkweed, parallel_cores = 1
 )
 climatch_output <- predict(climatch_model, climate_rast, raw_output = FALSE)
 # Plot the Climatch SDM predicted climate suitability
@@ -190,7 +190,7 @@ at the species occurrence locations used to build the model.
 ``` r
 # Extract climate values at occurrence locations (reference data for novelty assessment)
 ref_data <- terra::extract(climate_rast,
-                           terra::vect(occurrences_cleaned, crs = "EPSG:4326"),
+                           terra::vect(hawkweed, crs = "EPSG:4326"),
                            ID = FALSE)
 ```
 
