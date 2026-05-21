@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# bssdm: Biosecurity Species Distribution Modelling
+# bssdm: Biosecurity Species Distribution Modelling <a href="https://cebra-analytics.github.io/bssdm/"><img src="man/figures/logo.png" align="right" height="138" alt="bssdm R package logo" /></a>
 
 <!-- badges: start -->
 
